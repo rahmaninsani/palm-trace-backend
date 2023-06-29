@@ -27,6 +27,7 @@
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "joi": "^17.9.2",
+    "morgan": "^1.10.0",
     "winston": "^3.9.0"
   },
   "devDependencies": {

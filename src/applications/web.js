@@ -5,9 +5,11 @@ import session from "express-session";
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 
 import prismaClient from "./database.js";
+import morganMiddleware from "../middlewares/morgan-middleware.js";
 
 dotenv.config();
 
+const FRONTEND_APP_URL = process.env.FRONTEND_APP_URL || 'http://localhost:3000';
 const SESSION_SECRET = process.env.SESSION_SECRET || '$SeSsIoN-sEcReT$';
 const store = new PrismaSessionStore(
     prismaClient,
@@ -32,7 +34,8 @@ web.use(session({
 }));
 web.use(cors({
     credentials: true,
-    origin: 'http://localhost:3000'
+    origin: FRONTEND_APP_URL
 }));
+web.use(morganMiddleware);
 
 export default web;
