@@ -5,6 +5,12 @@ __metadata:
   version: 6
   cacheKey: 8
 
+".prisma@link:node-modules/.prisma::locator=palm-safe-backend%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: ".prisma@link:node-modules/.prisma::locator=palm-safe-backend%40workspace%3A."
+  languageName: node
+  linkType: soft
+
 "@ampproject/remapping@npm:^2.2.0":
   version: 2.2.1
   resolution: "@ampproject/remapping@npm:2.2.1"
@@ -1756,7 +1762,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/client@npm:^4.16.1":
+"@prisma/client@npm:4.16.1":
   version: 4.16.1
   resolution: "@prisma/client@npm:4.16.1"
   dependencies:
@@ -4911,7 +4917,7 @@ __metadata:
   resolution: "palm-safe-backend@workspace:."
   dependencies:
     "@babel/preset-env": ^7.22.5
-    "@prisma/client": ^4.16.1
+    "@prisma/client": 4.16.1
     "@types/express": ^4.17.17
     "@types/jest": ^29.5.2
     "@types/supertest": ^2.0.12

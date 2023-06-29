@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  dinas
+  petani
+  koperasi
+  pks
+}
+
+model Akun {
+  id        Bytes    @id @db.Binary(16) @default(dbgenerated("(uuid_to_bin(uuid()))"))
+  email     String   @db.VarChar(200) @unique
+  password  String   @db.VarChar(200)
+  role      Role
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  koperasi          Koperasi?
+  petani            Petani?
+  pabrikKelapaSawit PabrikKelapaSawit?
+  dinas             Dinas?
+
+  @@map("akun")
+}
+
+model Koperasi {
+  id            Bytes    @id @db.Binary(16) @default(dbgenerated("(uuid_to_bin(uuid()))"))
+  idAkun        Bytes    @db.Binary(16) @unique @map("id_akun")
+  siup          String   @db.Char(50) @unique
+  nama          String   @db.VarChar(200)
+  alamat        String   @db.Text()
+  nomorTelepon  String   @db.VarChar(20) @map("nomor_telepon")
+  nomorRekening String?  @db.VarChar(20) @map("nomor_rekening")
+  namaBank      String?  @db.VarChar(200) @map("nama_bank")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  akun   Akun     @relation(fields: [idAkun], references: [id])
+  petani Petani[]
+
+  @@map("koperasi")
+}
+
+model Petani {
+  id            Bytes    @id @db.Binary(16) @default(dbgenerated("(uuid_to_bin(uuid()))"))
+  idAkun        Bytes    @db.Binary(16) @unique @map("id_akun")
+  idKoperasi    Bytes    @db.Binary(16) @map("id_koperasi")
+  nik           String   @db.Char(16) @unique
+  nama          String   @db.VarChar(200)
+  alamat        String   @db.Text()
+  nomorTelepon  String   @db.VarChar(20) @map("nomor_telepon")
+  nomorRekening String?  @db.VarChar(20) @map("nomor_rekening")
+  namaBank      String?  @db.VarChar(200) @map("nama_bank")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  akun     Akun     @relation(fields: [idAkun], references: [id])
+  koperasi Koperasi @relation(fields: [idKoperasi], references: [id])
+
+  @@map("petani")
+}
+
+model PabrikKelapaSawit {
+  id            Bytes    @id @db.Binary(16) @default(dbgenerated("(uuid_to_bin(uuid()))"))
+  idAkun        Bytes    @db.Binary(16) @unique @map("id_akun")
+  siup          String   @db.Char(50) @unique
+  nama          String   @db.VarChar(200)
+  alamat        String   @db.Text()
+  nomorTelepon  String   @db.VarChar(20) @map("nomor_telepon")
+  nomorRekening String?  @db.VarChar(20) @map("nomor_rekening")
+  namaBank      String?  @db.VarChar(200) @map("nama_bank")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  akun Akun @relation(fields: [idAkun], references: [id])
+
+  @@map("pabrik_kelapa_sawit")
+}
+
+model Dinas {
+  id           Bytes    @id @db.Binary(16) @default(dbgenerated("(uuid_to_bin(uuid()))"))
+  idAkun       Bytes    @db.Binary(16) @unique @map("id_akun")
+  nama         String   @db.VarChar(200)
+  alamat       String   @db.Text()
+  nomorTelepon String   @db.VarChar(20) @map("nomor_telepon")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  akun Akun @relation(fields: [idAkun], references: [id])
+
+  @@map("dinas")
+}
