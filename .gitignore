@@ -1,0 +1,25 @@
+# Dependencies
+node_modules
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# Environment varibales
+.env*
+!.env*.example
+
+# testing
+/coverage
+
+# misc
+.DS.Store
+**/.DS_Store
+
+# .idea
+.idea
+
+# yarn
+.yarn

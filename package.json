@@ -1,0 +1,12 @@
+{
+  "name": "palm-safe-backend",
+  "version": "1.0.0",
+  "description": "Palm Safe Backend",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Rahman Insani",
+  "license": "ISC"
+}
