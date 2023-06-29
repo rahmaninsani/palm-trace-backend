@@ -18,8 +18,8 @@ enum Role {
 }
 
 model Akun {
-  id        Bytes    @id @db.Binary(16) @default(dbgenerated("(uuid_to_bin(uuid()))"))
-  email     String   @db.VarChar(200) @unique
+  id        Bytes    @id @default(dbgenerated("(uuid_to_bin(uuid()))")) @db.Binary(16)
+  email     String   @unique @db.VarChar(200)
   password  String   @db.VarChar(200)
   role      Role
   createdAt DateTime @default(now()) @map("created_at")
@@ -34,14 +34,14 @@ model Akun {
 }
 
 model Koperasi {
-  id            Bytes    @id @db.Binary(16) @default(dbgenerated("(uuid_to_bin(uuid()))"))
-  idAkun        Bytes    @db.Binary(16) @unique @map("id_akun")
-  siup          String   @db.Char(50) @unique
+  id            Bytes    @id @default(dbgenerated("(uuid_to_bin(uuid()))")) @db.Binary(16)
+  idAkun        Bytes    @unique @map("id_akun") @db.Binary(16)
+  siup          String   @unique @db.Char(50)
   nama          String   @db.VarChar(200)
   alamat        String   @db.Text()
-  nomorTelepon  String   @db.VarChar(20) @map("nomor_telepon")
-  nomorRekening String?  @db.VarChar(20) @map("nomor_rekening")
-  namaBank      String?  @db.VarChar(200) @map("nama_bank")
+  nomorTelepon  String   @map("nomor_telepon") @db.VarChar(20)
+  nomorRekening String?  @map("nomor_rekening") @db.VarChar(20)
+  namaBank      String?  @map("nama_bank") @db.VarChar(200)
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
@@ -52,15 +52,15 @@ model Koperasi {
 }
 
 model Petani {
-  id            Bytes    @id @db.Binary(16) @default(dbgenerated("(uuid_to_bin(uuid()))"))
-  idAkun        Bytes    @db.Binary(16) @unique @map("id_akun")
-  idKoperasi    Bytes    @db.Binary(16) @map("id_koperasi")
-  nik           String   @db.Char(16) @unique
+  id            Bytes    @id @default(dbgenerated("(uuid_to_bin(uuid()))")) @db.Binary(16)
+  idAkun        Bytes    @unique @map("id_akun") @db.Binary(16)
+  idKoperasi    Bytes    @map("id_koperasi") @db.Binary(16)
+  nik           String   @unique @db.Char(16)
   nama          String   @db.VarChar(200)
   alamat        String   @db.Text()
-  nomorTelepon  String   @db.VarChar(20) @map("nomor_telepon")
-  nomorRekening String?  @db.VarChar(20) @map("nomor_rekening")
-  namaBank      String?  @db.VarChar(200) @map("nama_bank")
+  nomorTelepon  String   @map("nomor_telepon") @db.VarChar(20)
+  nomorRekening String?  @map("nomor_rekening") @db.VarChar(20)
+  namaBank      String?  @map("nama_bank") @db.VarChar(200)
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
@@ -71,14 +71,14 @@ model Petani {
 }
 
 model PabrikKelapaSawit {
-  id            Bytes    @id @db.Binary(16) @default(dbgenerated("(uuid_to_bin(uuid()))"))
-  idAkun        Bytes    @db.Binary(16) @unique @map("id_akun")
-  siup          String   @db.Char(50) @unique
+  id            Bytes    @id @default(dbgenerated("(uuid_to_bin(uuid()))")) @db.Binary(16)
+  idAkun        Bytes    @unique @map("id_akun") @db.Binary(16)
+  siup          String   @unique @db.Char(50)
   nama          String   @db.VarChar(200)
   alamat        String   @db.Text()
-  nomorTelepon  String   @db.VarChar(20) @map("nomor_telepon")
-  nomorRekening String?  @db.VarChar(20) @map("nomor_rekening")
-  namaBank      String?  @db.VarChar(200) @map("nama_bank")
+  nomorTelepon  String   @map("nomor_telepon") @db.VarChar(20)
+  nomorRekening String?  @map("nomor_rekening") @db.VarChar(20)
+  namaBank      String?  @map("nama_bank") @db.VarChar(200)
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
@@ -88,15 +88,26 @@ model PabrikKelapaSawit {
 }
 
 model Dinas {
-  id           Bytes    @id @db.Binary(16) @default(dbgenerated("(uuid_to_bin(uuid()))"))
-  idAkun       Bytes    @db.Binary(16) @unique @map("id_akun")
+  id           Bytes    @id @default(dbgenerated("(uuid_to_bin(uuid()))")) @db.Binary(16)
+  idAkun       Bytes    @unique @map("id_akun") @db.Binary(16)
   nama         String   @db.VarChar(200)
   alamat       String   @db.Text()
-  nomorTelepon String   @db.VarChar(20) @map("nomor_telepon")
+  nomorTelepon String   @map("nomor_telepon") @db.VarChar(20)
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   akun Akun @relation(fields: [idAkun], references: [id])
 
   @@map("dinas")
+}
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String   @db.Text()
+  expiresAt DateTime
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("session")
 }
