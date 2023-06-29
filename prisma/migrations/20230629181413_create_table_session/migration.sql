@@ -3,7 +3,7 @@ CREATE TABLE `session` (
     `id` VARCHAR(191) NOT NULL,
     `sid` VARCHAR(191) NOT NULL,
     `data` TEXT NOT NULL,
-    `expiresAt` DATETIME(3) NOT NULL,
+    `expires_at` DATETIME(3) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
