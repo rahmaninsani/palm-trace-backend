@@ -5,7 +5,11 @@ import session from 'express-session';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 
 import prismaClient from './database.js';
+
 import morganMiddleware from '../middlewares/morgan-middleware.js';
+import errorMiddleware from '../middlewares/error-middleware.js';
+
+import authRoute from '../routes/auth-route.js';
 
 dotenv.config();
 
@@ -37,6 +41,10 @@ web.use(
     origin: FRONTEND_APP_URL,
   })
 );
+
 web.use(morganMiddleware);
+web.use(errorMiddleware);
+
+web.use(authRoute);
 
 export default web;

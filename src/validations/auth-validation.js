@@ -1,0 +1,12 @@
+import Joi from 'joi';
+
+const registerUserValidation = Joi.object({
+  role: Joi.string().valid('dinas', 'petani', 'koperasi', 'pks').required(),
+  nama: Joi.string().max(200).required(),
+  alamat: Joi.string().required(),
+  nomorTelepon: Joi.string().required(),
+  email: Joi.string().email().max(200).required(),
+  password: Joi.string().max(200).required(),
+});
+
+export { registerUserValidation };

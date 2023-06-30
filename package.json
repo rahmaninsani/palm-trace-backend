@@ -19,7 +19,7 @@
   "author": "Rahman Insani",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "4.16.1",
+    "@prisma/client": "^4.16.2",
     "@quixo3/prisma-session-store": "^3.1.13",
     "argon2": "^0.30.3",
     "cors": "^2.8.5",
@@ -38,7 +38,7 @@
     "babel-jest": "^29.5.0",
     "jest": "^29.5.0",
     "nodemon": "^2.0.22",
-    "prisma": "4.16.1",
+    "prisma": "^4.16.2",
     "supertest": "^6.3.3"
   }
 }
