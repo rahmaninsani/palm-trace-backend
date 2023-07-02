@@ -43,8 +43,9 @@ web.use(
 );
 
 web.use(morganMiddleware);
-web.use(errorMiddleware);
 
 web.use(authRoute);
+
+web.use(errorMiddleware);
 
 export default web;
