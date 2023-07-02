@@ -9,5 +9,6 @@ router.post('/api/users', authController.register);
 router.post('/api/users/login', authController.login);
 
 router.get('/api/users/me', authMiddleware, authController.me);
+router.delete('/api/users/logout', authMiddleware, authController.logout);
 
 export default router;

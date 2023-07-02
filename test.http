@@ -29,3 +29,9 @@ Accept: application/json
 GET http://localhost:9999/api/users/me
 Content-Type: application/json
 Accept: application/json
+
+###
+// Logout User
+DELETE http://localhost:9999/api/users/logout
+Content-Type: application/json
+Accept: application/json

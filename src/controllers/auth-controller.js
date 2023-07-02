@@ -39,4 +39,17 @@ const me = async (req, res, next) => {
   }
 };
 
-export default { register, login, me };
+const logout = async (req, res, next) => {
+  try {
+    const { session } = req;
+    await authService.logout(session);
+
+    res.status(200).json({
+      data: 'OK',
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export default { register, login, me, logout };

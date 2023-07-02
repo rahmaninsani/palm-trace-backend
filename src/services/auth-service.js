@@ -146,4 +146,12 @@ const me = async (email) => {
   };
 };
 
-export default { register, login, me };
+const logout = async (session) => {
+  session.destroy((error) => {
+    if (error) {
+      throw new ResponseError(400, 'Logout gagal');
+    }
+  });
+};
+
+export default { register, login, me, logout };
