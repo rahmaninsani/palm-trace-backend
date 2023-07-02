@@ -19,13 +19,14 @@ const register = async (request) => {
   }
 
   user.password = await argon2.hash(user.password);
+  const tableName = user.role === 'pks' ? 'pabrikKelapaSawit' : user.role;
 
   return prismaClient.akun.create({
     data: {
       email: user.email,
       password: user.password,
       role: user.role,
-      koperasi: {
+      [tableName]: {
         create: {
           nama: user.nama,
           alamat: user.alamat,
@@ -34,7 +35,7 @@ const register = async (request) => {
       },
     },
     select: {
-      koperasi: {
+      [tableName]: {
         select: {
           nama: true,
         },

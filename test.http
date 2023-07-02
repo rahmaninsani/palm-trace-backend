@@ -5,11 +5,11 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "role": "koperasi",
-  "nama": "Test",
+  "role": "dinas",
+  "nama": "Dinas Test",
   "alamat": "Test",
   "nomorTelepon": "123",
-  "email": "test@example.com",
+  "email": "dinas.test@example.com",
   "password": "test"
 }
 

@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
 const registerUserValidation = Joi.object({
-  role: Joi.string().valid('dinas', 'petani', 'koperasi', 'pks').required(),
+  role: Joi.string().valid('dinas', 'petani', 'koperasi', 'pabrikKelapaSawit').required(),
   nama: Joi.string().max(200).required(),
   alamat: Joi.string().required(),
   nomorTelepon: Joi.string().required(),
