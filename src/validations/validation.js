@@ -1,6 +1,7 @@
 const validate = (schema, request) => {
   const options = {
     abortEarly: false,
+    allowUnknown: false,
     errors: {
       wrap: {
         label: false,

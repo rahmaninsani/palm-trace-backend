@@ -1,7 +1,7 @@
 import argon2 from 'argon2';
 
 import validate from '../validations/validation.js';
-import { registerUserValidation } from '../validations/auth-validation.js';
+import { registerUserValidation, loginUserValidation } from '../validations/auth-validation.js';
 import prismaClient from '../applications/database.js';
 import ResponseError from '../errors/response-error.js';
 
@@ -45,4 +45,32 @@ const register = async (request) => {
   });
 };
 
-export default { register };
+const login = async (session, request) => {
+  const loginRequest = validate(loginUserValidation, request);
+
+  const user = await prismaClient.akun.findUnique({
+    where: {
+      email: loginRequest.email,
+    },
+    select: {
+      email: true,
+      password: true,
+    },
+  });
+
+  if (!user) {
+    throw new ResponseError(404, 'User tidak ditemukan');
+  }
+
+  const isPasswordValid = await argon2.verify(user.password, loginRequest.password);
+  if (!isPasswordValid) {
+    throw new ResponseError(401, 'Email atau password salah');
+  }
+
+  session.userEmail = user.email;
+  return {
+    email: user.email,
+  };
+};
+
+export default { register, login };

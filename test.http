@@ -1,0 +1,25 @@
+###
+// Register User
+POST http://localhost:9999/api/users
+Content-Type: application/json
+Accept: application/json
+
+{
+  "role": "koperasi",
+  "nama": "Test",
+  "alamat": "Test",
+  "nomorTelepon": "123",
+  "email": "test@example.com",
+  "password": "test"
+}
+
+###
+// Login User
+POST http://localhost:9999/api/users/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "default.2023@example.com",
+  "password": "12345678"
+}
