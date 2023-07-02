@@ -26,4 +26,17 @@ const login = async (req, res, next) => {
   }
 };
 
-export default { register, login };
+const me = async (req, res, next) => {
+  try {
+    const { email } = req.user;
+    const result = await authService.me(email);
+
+    res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { register, login, me };

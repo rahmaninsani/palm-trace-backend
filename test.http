@@ -23,3 +23,9 @@ Accept: application/json
   "email": "petani.test@example.com",
   "password": "test"
 }
+
+###
+// Get Current User
+GET http://localhost:9999/api/users/me
+Content-Type: application/json
+Accept: application/json

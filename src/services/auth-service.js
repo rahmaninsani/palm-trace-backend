@@ -1,7 +1,7 @@
 import argon2 from 'argon2';
 
 import validate from '../validations/validation.js';
-import { registerUserValidation, loginUserValidation } from '../validations/auth-validation.js';
+import { registerUserValidation, loginUserValidation, meValidation } from '../validations/auth-validation.js';
 import prismaClient from '../applications/database.js';
 import ResponseError from '../errors/response-error.js';
 import getTableNameByUserRole from '../utils/table-utils.js';
@@ -110,4 +110,40 @@ const login = async (session, request) => {
   };
 };
 
-export default { register, login };
+const me = async (email) => {
+  email = validate(meValidation, email);
+
+  const akun = await prismaClient.akun.findUnique({
+    where: {
+      email: email,
+    },
+    select: {
+      id: true,
+      email: true,
+      password: true,
+      role: true,
+    },
+  });
+
+  if (!akun) {
+    throw new ResponseError(404, 'User tidak ditemukan');
+  }
+
+  const tableName = getTableNameByUserRole(akun.role);
+  const user = await prismaClient[tableName].findUnique({
+    where: {
+      idAkun: akun.id,
+    },
+    select: {
+      nama: true,
+    },
+  });
+
+  return {
+    nama: user.nama,
+    email: akun.email,
+    role: akun.role,
+  };
+};
+
+export default { register, login, me };
