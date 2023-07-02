@@ -21,19 +21,33 @@ const register = async (request) => {
   user.password = await argon2.hash(user.password);
   const tableName = user.role === 'pks' ? 'pabrikKelapaSawit' : user.role;
 
-  return prismaClient.akun.create({
-    data: {
-      email: user.email,
-      password: user.password,
-      role: user.role,
-      [tableName]: {
-        create: {
-          nama: user.nama,
-          alamat: user.alamat,
-          nomorTelepon: user.nomorTelepon,
-        },
+  const data = {
+    email: user.email,
+    password: user.password,
+    role: user.role,
+    [tableName]: {
+      create: {
+        nama: user.nama,
+        alamat: user.alamat,
+        nomorTelepon: user.nomorTelepon,
       },
     },
+  };
+
+  if (user.role === 'petani') {
+    const { id } = await prismaClient.koperasi.findFirst({
+      where: {
+        nama: 'Koperasi Default',
+      },
+      select: {
+        id: true,
+      },
+    });
+    data.petani.create.idKoperasi = id;
+  }
+
+  return prismaClient.akun.create({
+    data,
     select: {
       [tableName]: {
         select: {
