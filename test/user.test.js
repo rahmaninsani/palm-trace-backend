@@ -20,7 +20,7 @@ describe('POST /api/users', () => {
     });
 
     expect(result.status).toBe(200);
-    expect(result.body.data.koperasi.nama).toBe('Koperasi Test');
+    expect(result.body.data.nama).toBe('Koperasi Test');
     expect(result.body.data.email).toBe('test@example.com');
     expect(result.body.data.role).toBe('koperasi');
     expect(result.body.data.password).toBeUndefined();

@@ -4,37 +4,38 @@ import validate from '../validations/validation.js';
 import { registerUserValidation, loginUserValidation } from '../validations/auth-validation.js';
 import prismaClient from '../applications/database.js';
 import ResponseError from '../errors/response-error.js';
+import getTableNameByUserRole from '../utils/table-utils.js';
 
 const register = async (request) => {
-  const user = validate(registerUserValidation, request);
+  const userRequest = validate(registerUserValidation, request);
 
-  const countUser = await prismaClient.akun.count({
+  const countAkun = await prismaClient.akun.count({
     where: {
-      email: user.email,
+      email: userRequest.email,
     },
   });
 
-  if (countUser === 1) {
+  if (countAkun === 1) {
     throw new ResponseError(400, 'Email sudah terdaftar');
   }
 
-  user.password = await argon2.hash(user.password);
-  const tableName = user.role === 'pks' ? 'pabrikKelapaSawit' : user.role;
+  userRequest.password = await argon2.hash(userRequest.password);
 
+  const tableName = getTableNameByUserRole(userRequest.role);
   const data = {
-    email: user.email,
-    password: user.password,
-    role: user.role,
+    email: userRequest.email,
+    password: userRequest.password,
+    role: userRequest.role,
     [tableName]: {
       create: {
-        nama: user.nama,
-        alamat: user.alamat,
-        nomorTelepon: user.nomorTelepon,
+        nama: userRequest.nama,
+        alamat: userRequest.alamat,
+        nomorTelepon: userRequest.nomorTelepon,
       },
     },
   };
 
-  if (user.role === 'petani') {
+  if (userRequest.role === 'petani') {
     const { id } = await prismaClient.koperasi.findFirst({
       where: {
         nama: 'Koperasi Default',
@@ -46,7 +47,7 @@ const register = async (request) => {
     data.petani.create.idKoperasi = id;
   }
 
-  return prismaClient.akun.create({
+  const akunUser = await prismaClient.akun.create({
     data,
     select: {
       [tableName]: {
@@ -58,33 +59,54 @@ const register = async (request) => {
       role: true,
     },
   });
+
+  return {
+    nama: akunUser[tableName].nama,
+    email: akunUser.email,
+    role: akunUser.role,
+  };
 };
 
 const login = async (session, request) => {
-  const loginRequest = validate(loginUserValidation, request);
+  const userRequest = validate(loginUserValidation, request);
 
-  const user = await prismaClient.akun.findUnique({
+  const akun = await prismaClient.akun.findUnique({
     where: {
-      email: loginRequest.email,
+      email: userRequest.email,
     },
     select: {
+      id: true,
       email: true,
       password: true,
+      role: true,
     },
   });
 
-  if (!user) {
+  if (!akun) {
     throw new ResponseError(404, 'User tidak ditemukan');
   }
 
-  const isPasswordValid = await argon2.verify(user.password, loginRequest.password);
+  const isPasswordValid = await argon2.verify(akun.password, userRequest.password);
   if (!isPasswordValid) {
     throw new ResponseError(401, 'Email atau password salah');
   }
 
-  session.userEmail = user.email;
+  const tableName = getTableNameByUserRole(akun.role);
+  const user = await prismaClient[tableName].findUnique({
+    where: {
+      idAkun: akun.id,
+    },
+    select: {
+      nama: true,
+    },
+  });
+
+  session.userEmail = akun.email;
+
   return {
-    email: user.email,
+    nama: user.nama,
+    email: akun.email,
+    role: akun.role,
   };
 };
 
