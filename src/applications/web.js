@@ -5,6 +5,7 @@ import session from 'express-session';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 
 import prismaClient from './database.js';
+import { createFabricWallet } from './fabric-wallet.js';
 
 import morganMiddleware from '../middlewares/morgan-middleware.js';
 import errorMiddleware from '../middlewares/error-middleware.js';
@@ -47,5 +48,14 @@ web.use(morganMiddleware);
 web.use(authRoute);
 
 web.use(errorMiddleware);
+
+// Create a Fabric wallet and store it in the Express app's locals
+createFabricWallet()
+  .then((wallet) => {
+    web.locals.wallet = wallet;
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 
 export default web;
