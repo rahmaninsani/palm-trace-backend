@@ -5,15 +5,15 @@ import { identity } from '../src/config/constant.js';
 
 const main = async () => {
   await prismaClient.akun.upsert({
-    where: { email: 'dinas.ca@palmsafe.com' },
+    where: { email: 'admin_dinas' },
     update: {},
     create: {
-      email: 'dinas.ca@palmsafe.com',
-      password: await argon2.hash('Dinas_CA#2023'),
+      email: 'admin_dinas',
+      password: await argon2.hash('admin_dinas'),
       role: identity.dinas.databaseRole,
       [identity.dinas.tableName]: {
         create: {
-          nama: 'Dinas Certificate Authority',
+          nama: 'Dinas Admin',
           alamat: 'Bandung',
           nomorTelepon: '081234567890',
         },
@@ -22,15 +22,15 @@ const main = async () => {
   });
 
   await prismaClient.akun.upsert({
-    where: { email: 'pks.ca@palmsafe.com' },
+    where: { email: 'admin_pks' },
     update: {},
     create: {
-      email: 'pks.ca@palmsafe.com',
-      password: await argon2.hash('PKS_CA#2023'),
+      email: 'admin_pks',
+      password: await argon2.hash('admin_pks'),
       role: identity.pks.databaseRole,
       [identity.pks.tableName]: {
         create: {
-          nama: 'Pabrik Kelapa Sawit Certificate Authority',
+          nama: 'Pabrik Kelapa Sawit Admin',
           alamat: 'Bandung',
           nomorTelepon: '081234567890',
         },
@@ -39,15 +39,15 @@ const main = async () => {
   });
 
   const koperasi = await prismaClient.akun.upsert({
-    where: { email: 'koperasi.ca@palmsafe.com' },
+    where: { email: 'admin_koperasi' },
     update: {},
     create: {
-      email: 'koperasi.ca@palmsafe.com',
-      password: await argon2.hash('Koperasi_CA#2023'),
+      email: 'admin_koperasi',
+      password: await argon2.hash('admin_koperasi'),
       role: identity.koperasi.databaseRole,
       [identity.koperasi.tableName]: {
         create: {
-          nama: 'Koperasi Certificate Authority',
+          nama: 'Koperasi Admin',
           alamat: 'Bandung',
           nomorTelepon: '081234567890',
         },
@@ -63,16 +63,16 @@ const main = async () => {
   });
 
   await prismaClient.akun.upsert({
-    where: { email: 'petani.ca@palmsafe.com' },
+    where: { email: 'admin_petani' },
     update: {},
     create: {
-      email: 'petani.ca@palmsafe.com',
-      password: await argon2.hash('Petani_CA#2023'),
+      email: 'admin_petani',
+      password: await argon2.hash('admin_petani'),
       role: identity.petani.databaseRole,
       [identity.petani.tableName]: {
         create: {
           idKoperasi: koperasi.koperasi.id,
-          nama: 'Petani Certificate Authority',
+          nama: 'Petani Admin',
           alamat: 'Bandung',
           nomorTelepon: '081234567890',
         },

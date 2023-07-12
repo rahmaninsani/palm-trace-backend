@@ -4,10 +4,14 @@ import validate from '../validations/validation.js';
 import { registerUserValidation, loginUserValidation, meValidation } from '../validations/auth-validation.js';
 import prismaClient from '../applications/database.js';
 import ResponseError from '../errors/response-error.js';
-import getTableNameByUserRole from '../utils/table-utils.js';
+
+import { registerUserToFabric } from '../applications/fabric-wallet.js';
+import { identity } from '../config/constant.js';
 
 const register = async (request) => {
   const userRequest = validate(registerUserValidation, request);
+
+  const { tableName, databaseRole, organizationName } = identity[userRequest.role];
 
   const countAkun = await prismaClient.akun.count({
     where: {
@@ -21,11 +25,10 @@ const register = async (request) => {
 
   userRequest.password = await argon2.hash(userRequest.password);
 
-  const tableName = getTableNameByUserRole(userRequest.role);
   const data = {
     email: userRequest.email,
     password: userRequest.password,
-    role: userRequest.role,
+    role: databaseRole,
     [tableName]: {
       create: {
         nama: userRequest.nama,
@@ -60,6 +63,13 @@ const register = async (request) => {
     },
   });
 
+  if (akunUser === null) {
+    throw new ResponseError(500, 'Gagal membuat akun');
+  }
+
+  const hlf = await registerUserToFabric(userRequest.email, organizationName);
+  console.log(hlf);
+
   return {
     nama: akunUser[tableName].nama,
     email: akunUser.email,
@@ -91,7 +101,7 @@ const login = async (session, request) => {
     throw new ResponseError(401, 'Email atau password salah');
   }
 
-  const tableName = getTableNameByUserRole(akun.role);
+  const { tableName, databaseRole, organizationName } = identity[userRequest.role];
   const user = await prismaClient[tableName].findUnique({
     where: {
       idAkun: akun.id,
@@ -129,7 +139,7 @@ const me = async (email) => {
     throw new ResponseError(404, 'User tidak ditemukan');
   }
 
-  const tableName = getTableNameByUserRole(akun.role);
+  const { tableName, databaseRole, organizationName } = identity[akun.role];
   const user = await prismaClient[tableName].findUnique({
     where: {
       idAkun: akun.id,

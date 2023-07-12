@@ -2,25 +2,30 @@ import { readFileSync } from 'fs';
 import { DefaultEventHandlerStrategies, DefaultQueryHandlerStrategies, Gateway } from 'fabric-network';
 import FabricCAServices from 'fabric-ca-client';
 
-import wallet from './wallet';
+import wallet from './wallet.js';
 
 const { orgs } = JSON.parse(readFileSync('src/config/env.json', 'utf8'));
 
 const createDefaultWallet = async () => {
-  for (const [key, value] of Object.entries(orgs)) {
-    const identity = {
-      credentials: {
-        certificate: value.certificate,
-        privateKey: value.privateKey,
-      },
-      mspId: value.msp,
-      type: 'X.509',
-    };
+  // for (const [key, value] of Object.entries(orgs)) {
+  //   const identity = {
+  //     credentials: {
+  //       certificate: value.certificate,
+  //       privateKey: value.privateKey,
+  //     },
+  //     mspId: value.msp,
+  //     type: 'X.509',
+  //   };
 
-    await wallet.put(value.email, identity);
-  }
+  //   await wallet.put(value.email, identity);
+  // }
 
-  return wallet;
+  // return wallet;
+
+  await enrollAdmin('Dinas', 'admin_dinas', 'admin_dinas');
+  await enrollAdmin('PabrikKelapaSawit', 'admin_pks', 'admin_pks');
+  await enrollAdmin('Koperasi', 'admin_koperasi', 'admin_koperasi');
+  await enrollAdmin('Petani', 'admin_petani', 'admin_petani');
 };
 
 const createGateway = async (connectionProfile, identity, wallet) => {
@@ -73,6 +78,8 @@ const getContract = async (wallet, organizationName, channelName, chaincodeName)
   throw Error('Organization not found');
 };
 
+// Rifqi
+
 const createCa = (organizationName) => {
   const { certificateAuthorities } = JSON.parse(orgs[organizationName].connectionProfile);
   const { url, caName } = certificateAuthorities[Object.keys(certificateAuthorities)[0]];
@@ -80,9 +87,66 @@ const createCa = (organizationName) => {
   return new FabricCAServices(url, undefined, caName);
 };
 
+const getAdminEmail = (organizationName) => {
+  // for (const [key, value] of Object.entries(orgs)) {
+  //   if (key == organizationName) {
+  //     return value.email;
+  //   }
+  // }
+  const email = {
+    Dinas: 'admin_dinas',
+    PabrikKelapaSawit: 'admin_pks',
+    Koperasi: 'admin_koperasi',
+    Petani: 'admin_petani',
+  };
+
+  return email[organizationName];
+};
+
+const getTlsCACerts = (organizationName) => {
+  const { certificateAuthorities } = JSON.parse(orgs[organizationName].connectionProfile);
+  const data = certificateAuthorities[Object.keys(certificateAuthorities)[0]];
+  return data;
+};
+
+const enrollAdmin = async (organizationName, email, password) => {
+  const { url, tlsCACerts, caName } = getTlsCACerts(organizationName);
+  const ca = new FabricCAServices(url, { trustedRoots: tlsCACerts, verify: true }, caName);
+
+  // Check to see if we've already enrolled the admin user.
+  const identity = await wallet.get(email);
+  if (identity) {
+    console.log('An identity for the admin user "admin" already exists in the wallet');
+    return;
+  }
+
+  // Enroll the admin user, and import the new identity into the wallet.
+  const enrollment = await ca.enroll({
+    enrollmentID: email,
+    enrollmentSecret: password,
+  });
+
+  for (const [key, value] of Object.entries(orgs)) {
+    if (key == organizationName) {
+      const identity = {
+        credentials: {
+          certificate: enrollment.certificate,
+          privateKey: enrollment.key.toBytes(),
+        },
+        mspId: value.msp,
+        type: 'X.509',
+      };
+      await wallet.put(email, identity);
+      console.log('Successfully enrolled admin user "admin" and imported it into the wallet');
+    }
+  }
+};
+
 const registerUserToFabric = async (email, userOrganization) => {
+  // Ccp done from env.json
+  // CA URL done from env.json
+
   const ca = createCa(userOrganization);
-  const wallet = await createFabricWallet(userOrganization);
 
   const userIdentity = await wallet.get(email);
   if (userIdentity) {
@@ -90,13 +154,19 @@ const registerUserToFabric = async (email, userOrganization) => {
     return false;
   }
 
-  // build a user object for authenticating with the CA
-  const adminIdentity = await wallet.get('admin');
+  // Check if admin identity exists in the wallet
+  const adminEmail = getAdminEmail(userOrganization);
+  let adminIdentity = await wallet.get(adminEmail);
 
-  console.log('CHILD WALLET: ', wallet);
+  if (!adminIdentity) {
+    console.log('An identity for the admin user "admin" does not exist in the wallet');
+    await enrollAdmin(userOrganization, adminEmail, 'adminpw');
+    adminIdentity = await wallet.get(adminEmail);
+    console.log('Admin Enrolled Successfully');
+  }
 
   const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
-  const adminUser = await provider.getUserContext(adminIdentity, 'admin');
+  const adminUser = await provider.getUserContext(adminIdentity, adminEmail);
 
   // Register the user, enroll the user, and import the new identity into the wallet.
   const secret = await ca.register(
@@ -120,16 +190,13 @@ const registerUserToFabric = async (email, userOrganization) => {
           certificate: enrollment.certificate,
           privateKey: enrollment.key.toBytes(),
         },
-        mspId: data.msp,
+        mspId: value.msp,
         type: 'X.509',
       };
 
-      await req.app.locals.wallet.put(email, identity);
+      await wallet.put(email, identity);
     }
   }
-
-  console.log(`Successfully registered and enrolled admin user ${email} and imported it into the wallet`);
-  console.log(req.app.locals.wallet);
 
   return true;
 };
