@@ -1,16 +1,17 @@
 import authService from '../services/auth-service.js';
 
 const register = async (req, res, next) => {
-  try {
-    const { body: request } = req;
-    const result = await authService.register(request);
+  // try {
+  const { body: request } = req;
+  console.log('PARENT WALLET: ', req.app.locals.wallet);
+  const result = await authService.register(request);
 
-    res.status(200).json({
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
+  res.status(200).json({
+    data: result,
+  });
+  // } catch (error) {
+  //   next(error);
+  // }
 };
 
 const login = async (req, res, next) => {

@@ -11,6 +11,7 @@ import morganMiddleware from '../middlewares/morgan-middleware.js';
 import errorMiddleware from '../middlewares/error-middleware.js';
 
 import authRoute from '../routes/auth-route.js';
+import transaksiRoute from '../routes/transaksi-route.js';
 
 dotenv.config();
 
@@ -46,13 +47,14 @@ web.use(
 web.use(morganMiddleware);
 
 web.use(authRoute);
+web.use(transaksiRoute);
 
 web.use(errorMiddleware);
 
 // Create a Fabric wallet and store it in the Express app's locals
 createFabricWallet()
   .then((wallet) => {
-    web.locals.wallet = wallet;
+    console.log(wallet);
   })
   .catch((error) => {
     console.log(error);

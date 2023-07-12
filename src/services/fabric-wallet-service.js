@@ -1,0 +1,57 @@
+import prismaClient from '../applications/database.js';
+
+class DbWalletStore {
+  constructor() {}
+
+  async get(label) {
+    const user = await prismaClient.akun.findUnique({
+      where: {
+        email: label,
+      },
+      select: {
+        wallet: true,
+      },
+    });
+
+    if (!user) {
+      console.error('User not found');
+      return null;
+    }
+
+    return user.wallet;
+  }
+
+  async list() {
+    const wallets = await prismaClient.akun.findMany({
+      select: {
+        wallet: true,
+      },
+    });
+
+    return wallets;
+  }
+
+  async put(label, data) {
+    await prismaClient.akun.update({
+      where: {
+        email: label,
+      },
+      data: {
+        wallet: data.toString('utf8'),
+      },
+    });
+  }
+
+  async remove(label) {
+    await prismaClient.akun.update({
+      where: {
+        email: label,
+      },
+      data: {
+        wallet: null,
+      },
+    });
+  }
+}
+
+export default DbWalletStore;

@@ -5,11 +5,11 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "role": "petani",
-  "nama": "Petani Test",
+  "role": "dinas",
+  "nama": "Dinas Test 2",
   "alamat": "Test",
   "nomorTelepon": "123",
-  "email": "petani.test@example.com",
+  "email": "dinas.test2@example.com",
   "password": "test"
 }
 
@@ -20,7 +20,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "petani.test@example.com",
+  "email": "dinas.test@example.com",
   "password": "test"
 }
 
@@ -33,5 +33,11 @@ Accept: application/json
 ###
 // Logout User
 DELETE http://localhost:9999/api/users/logout
+Content-Type: application/json
+Accept: application/json
+
+###
+// Create Assets
+POST http://localhost:9999/api/transaksi
 Content-Type: application/json
 Accept: application/json
