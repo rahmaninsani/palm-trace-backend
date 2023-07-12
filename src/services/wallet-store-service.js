@@ -1,6 +1,6 @@
 import prismaClient from '../applications/database.js';
 
-class DbWalletStore {
+class WalletStore {
   constructor() {}
 
   async get(label) {
@@ -54,4 +54,4 @@ class DbWalletStore {
   }
 }
 
-export default DbWalletStore;
+export default WalletStore;

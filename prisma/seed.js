@@ -1,5 +1,6 @@
 import argon2 from 'argon2';
 import prismaClient from '../src/applications/database.js';
+import { createDefaultWallet } from '../src/applications/fabric-wallet.js';
 import { identity } from '../src/config/constant.js';
 
 const main = async () => {
@@ -78,6 +79,9 @@ const main = async () => {
       },
     },
   });
+
+  // Create a Fabric wallet for each organization
+  await createDefaultWallet();
 };
 
 main()
