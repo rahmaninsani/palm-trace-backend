@@ -15,13 +15,13 @@ describe('POST /api/users', () => {
       nama: 'Koperasi Test',
       alamat: 'Test',
       nomorTelepon: '123',
-      email: 'testing0@example.com',
+      email: 'koperasi.test1@example.com',
       password: 'test',
     });
 
     expect(result.status).toBe(200);
     expect(result.body.data.nama).toBe('Koperasi Test');
-    expect(result.body.data.email).toBe('testing0@example.com');
+    expect(result.body.data.email).toBe('koperasi.test1@example.com');
     expect(result.body.data.role).toBe('koperasi');
     expect(result.body.data.password).toBeUndefined();
   });

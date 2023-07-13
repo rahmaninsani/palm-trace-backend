@@ -1,17 +1,16 @@
 import argon2 from 'argon2';
 
-import validate from '../validations/validation.js';
-import { registerUserValidation, loginUserValidation, meValidation } from '../validations/auth-validation.js';
 import prismaClient from '../applications/database.js';
 import ResponseError from '../errors/response-error.js';
+import validate from '../validations/validation.js';
+import { registerUserValidation, loginUserValidation, meValidation } from '../validations/auth-validation.js';
+import util from '../utils/util.js';
 
-import { registerUserToFabric } from '../applications/fabric-wallet.js';
-import { identity } from '../config/constant.js';
+import walletService from './wallet-service.js';
 
 const register = async (request) => {
   const userRequest = validate(registerUserValidation, request);
-
-  const { tableName, databaseRole, organizationName } = identity[userRequest.role];
+  const { tableName, databaseRoleName, roleName, organizationName } = util.getAttributeName(userRequest.role);
 
   const countAkun = await prismaClient.akun.count({
     where: {
@@ -28,7 +27,7 @@ const register = async (request) => {
   const data = {
     email: userRequest.email,
     password: userRequest.password,
-    role: databaseRole,
+    role: databaseRoleName,
     [tableName]: {
       create: {
         nama: userRequest.nama,
@@ -38,7 +37,7 @@ const register = async (request) => {
     },
   };
 
-  if (userRequest.role === 'petani') {
+  if (roleName === 'petani') {
     const { id } = await prismaClient.koperasi.findFirst({
       where: {
         nama: 'Koperasi Admin',
@@ -50,7 +49,8 @@ const register = async (request) => {
     data.petani.create.idKoperasi = id;
   }
 
-  const akunUser = await prismaClient.akun.create({
+  // Register to database
+  const userAccount = await prismaClient.akun.create({
     data,
     select: {
       [tableName]: {
@@ -59,20 +59,20 @@ const register = async (request) => {
         },
       },
       email: true,
-      role: true,
     },
   });
 
-  if (akunUser === null) {
+  if (userAccount === null) {
     throw new ResponseError(500, 'Gagal membuat akun');
   }
 
-  await registerUserToFabric(userRequest.email, organizationName);
+  // Register and enroll to Fabric
+  await walletService.registerEnrollUser(userRequest.email, organizationName);
 
   return {
-    nama: akunUser[tableName].nama,
-    email: akunUser.email,
-    role: userRequest.role,
+    nama: userAccount[tableName].nama,
+    email: userAccount.email,
+    role: roleName,
   };
 };
 
@@ -100,7 +100,7 @@ const login = async (session, request) => {
     throw new ResponseError(401, 'Email atau password salah');
   }
 
-  const { tableName, databaseRole, organizationName } = identity[userRequest.role];
+  const { tableName, roleName } = util.getAttributeName(akun.role);
   const user = await prismaClient[tableName].findUnique({
     where: {
       idAkun: akun.id,
@@ -115,7 +115,7 @@ const login = async (session, request) => {
   return {
     nama: user.nama,
     email: akun.email,
-    role: akun.role,
+    role: roleName,
   };
 };
 
@@ -138,7 +138,7 @@ const me = async (email) => {
     throw new ResponseError(404, 'User tidak ditemukan');
   }
 
-  const { tableName, databaseRole, organizationName } = identity[akun.role];
+  const { tableName, roleName } = util.getAttributeName(akun.role);
   const user = await prismaClient[tableName].findUnique({
     where: {
       idAkun: akun.id,
@@ -151,7 +151,7 @@ const me = async (email) => {
   return {
     nama: user.nama,
     email: akun.email,
-    role: akun.role,
+    role: roleName,
   };
 };
 

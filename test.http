@@ -7,9 +7,9 @@ Accept: application/json
 {
   "role": "petani",
   "nama": "Petani Test",
-  "alamat": "Test",
-  "nomorTelepon": "123",
-  "email": "petani.test@palmsafe.com",
+  "alamat": "Jl Petani Test",
+  "nomorTelepon": "081234567890",
+  "email": "petani.test@gmail.com",
   "password": "test"
 }
 
@@ -20,7 +20,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "dinas.test@example.com",
+  "email": "petani.test@gmail.com",
   "password": "test"
 }
 

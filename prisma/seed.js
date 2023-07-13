@@ -1,17 +1,18 @@
 import argon2 from 'argon2';
 import prismaClient from '../src/applications/database.js';
-import { createOrganizationAdminWallet } from '../src/applications/fabric-wallet.js';
-import { identity } from '../src/config/constant.js';
+import walletService from '../src/services/wallet-service.js';
+import util from '../src/utils/util.js';
 
 const main = async () => {
+  // Insert admin data to database for each organization
   await prismaClient.akun.upsert({
     where: { email: 'dinas.admin@palmsafe.com' },
     update: {},
     create: {
       email: 'dinas.admin@palmsafe.com',
       password: await argon2.hash('Dinas@Palmsafe2023'),
-      role: identity.dinas.databaseRole,
-      [identity.dinas.tableName]: {
+      role: util.getAttributeName('dinas').databaseRoleName,
+      [util.getAttributeName('dinas').tableName]: {
         create: {
           nama: 'Dinas Admin',
           alamat: 'Bandung',
@@ -27,8 +28,8 @@ const main = async () => {
     create: {
       email: 'pks.admin@palmsafe.com',
       password: await argon2.hash('Pks@Palmsafe2023'),
-      role: identity.pks.databaseRole,
-      [identity.pks.tableName]: {
+      role: util.getAttributeName('pks').databaseRoleName,
+      [util.getAttributeName('pks').tableName]: {
         create: {
           nama: 'Pabrik Kelapa Sawit Admin',
           alamat: 'Bandung',
@@ -38,14 +39,14 @@ const main = async () => {
     },
   });
 
-  const koperasi = await prismaClient.akun.upsert({
+  const { koperasi } = await prismaClient.akun.upsert({
     where: { email: 'koperasi.admin@palmsafe.com' },
     update: {},
     create: {
       email: 'koperasi.admin@palmsafe.com',
       password: await argon2.hash('Koperasi@Palmsafe2023'),
-      role: identity.koperasi.databaseRole,
-      [identity.koperasi.tableName]: {
+      role: util.getAttributeName('koperasi').databaseRoleName,
+      [util.getAttributeName('koperasi').tableName]: {
         create: {
           nama: 'Koperasi Admin',
           alamat: 'Bandung',
@@ -54,7 +55,7 @@ const main = async () => {
       },
     },
     select: {
-      [identity.koperasi.tableName]: {
+      [util.getAttributeName('koperasi').tableName]: {
         select: {
           id: true,
         },
@@ -68,10 +69,10 @@ const main = async () => {
     create: {
       email: 'petani.admin@palmsafe.com',
       password: await argon2.hash('Petani@Palmsafe2023'),
-      role: identity.petani.databaseRole,
-      [identity.petani.tableName]: {
+      role: util.getAttributeName('petani').databaseRoleName,
+      [util.getAttributeName('petani').tableName]: {
         create: {
-          idKoperasi: koperasi.koperasi.id,
+          idKoperasi: koperasi.id,
           nama: 'Petani Admin',
           alamat: 'Bandung',
           nomorTelepon: '081234567890',
@@ -80,8 +81,8 @@ const main = async () => {
     },
   });
 
-  // Create a Fabric wallet for each organization
-  await createOrganizationAdminWallet();
+  // Create a Fabric wallet for each admin organization
+  await walletService.enrollAllAdmin();
 };
 
 main()
