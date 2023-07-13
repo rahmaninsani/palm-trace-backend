@@ -3,7 +3,7 @@ import FabricCAServices from 'fabric-ca-client';
 
 import wallet from '../applications/wallet.js';
 
-const { orgs } = JSON.parse(readFileSync('src/config/env.json', 'utf8'));
+const { orgs } = JSON.parse(readFileSync('src/config/fabric-config.json', 'utf8'));
 
 const getOrganizationInfo = (organizationName) => {
   const { email, password, msp, connectionProfile, certificate, privateKey } = orgs[organizationName];

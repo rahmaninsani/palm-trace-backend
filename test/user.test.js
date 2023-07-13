@@ -11,18 +11,18 @@ describe('POST /api/users', () => {
 
   it('should can register new user', async () => {
     const result = await supertest(web).post('/api/users').send({
-      role: 'koperasi',
-      nama: 'Koperasi Test',
-      alamat: 'Test',
+      role: 'dinas',
+      nama: 'Dinas Test',
+      alamat: 'Alamat Test',
       nomorTelepon: '123',
-      email: 'koperasi.test1@example.com',
+      email: 'dinas.test@example.com',
       password: 'test',
     });
 
     expect(result.status).toBe(200);
-    expect(result.body.data.nama).toBe('Koperasi Test');
-    expect(result.body.data.email).toBe('koperasi.test1@example.com');
-    expect(result.body.data.role).toBe('koperasi');
+    expect(result.body.data.nama).toBe('Dinas Test');
+    expect(result.body.data.email).toBe('dinas.test@example.com');
+    expect(result.body.data.role).toBe('dinas');
     expect(result.body.data.password).toBeUndefined();
   });
 

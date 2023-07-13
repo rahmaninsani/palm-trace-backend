@@ -7,7 +7,6 @@ npm-debug.log*
 # Environment varibales
 .env*
 !.env*.example
-env.json
 
 # testing
 /coverage
@@ -18,3 +17,5 @@ env.json
 
 # .idea
 .idea
+
+fabric-config.json
