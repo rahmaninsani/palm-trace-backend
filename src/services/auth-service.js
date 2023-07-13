@@ -41,7 +41,7 @@ const register = async (request) => {
   if (userRequest.role === 'petani') {
     const { id } = await prismaClient.koperasi.findFirst({
       where: {
-        nama: 'Koperasi Default',
+        nama: 'Koperasi Admin',
       },
       select: {
         id: true,
@@ -67,13 +67,12 @@ const register = async (request) => {
     throw new ResponseError(500, 'Gagal membuat akun');
   }
 
-  const hlf = await registerUserToFabric(userRequest.email, organizationName);
-  console.log(hlf);
+  await registerUserToFabric(userRequest.email, organizationName);
 
   return {
     nama: akunUser[tableName].nama,
     email: akunUser.email,
-    role: akunUser.role,
+    role: userRequest.role,
   };
 };
 

@@ -6,26 +6,10 @@ import wallet from './wallet.js';
 
 const { orgs } = JSON.parse(readFileSync('src/config/env.json', 'utf8'));
 
-const createDefaultWallet = async () => {
-  // for (const [key, value] of Object.entries(orgs)) {
-  //   const identity = {
-  //     credentials: {
-  //       certificate: value.certificate,
-  //       privateKey: value.privateKey,
-  //     },
-  //     mspId: value.msp,
-  //     type: 'X.509',
-  //   };
-
-  //   await wallet.put(value.email, identity);
-  // }
-
-  // return wallet;
-
-  await enrollAdmin('Dinas', 'admin_dinas', 'admin_dinas');
-  await enrollAdmin('PabrikKelapaSawit', 'admin_pks', 'admin_pks');
-  await enrollAdmin('Koperasi', 'admin_koperasi', 'admin_koperasi');
-  await enrollAdmin('Petani', 'admin_petani', 'admin_petani');
+const createOrganizationAdminWallet = async () => {
+  for (const [organizationName, value] of Object.entries(orgs)) {
+    await enrollAdmin(organizationName, value.email, value.password);
+  }
 };
 
 const createGateway = async (connectionProfile, identity, wallet) => {
@@ -88,19 +72,11 @@ const createCa = (organizationName) => {
 };
 
 const getAdminEmail = (organizationName) => {
-  // for (const [key, value] of Object.entries(orgs)) {
-  //   if (key == organizationName) {
-  //     return value.email;
-  //   }
-  // }
-  const email = {
-    Dinas: 'admin_dinas',
-    PabrikKelapaSawit: 'admin_pks',
-    Koperasi: 'admin_koperasi',
-    Petani: 'admin_petani',
-  };
-
-  return email[organizationName];
+  for (const [key, value] of Object.entries(orgs)) {
+    if (key == organizationName) {
+      return value.email;
+    }
+  }
 };
 
 const getTlsCACerts = (organizationName) => {
@@ -201,4 +177,4 @@ const registerUserToFabric = async (email, userOrganization) => {
   return true;
 };
 
-export { createDefaultWallet, getContract, registerUserToFabric };
+export { createOrganizationAdminWallet, getContract, registerUserToFabric };

@@ -1,15 +1,15 @@
 import argon2 from 'argon2';
 import prismaClient from '../src/applications/database.js';
-import { createDefaultWallet } from '../src/applications/fabric-wallet.js';
+import { createOrganizationAdminWallet } from '../src/applications/fabric-wallet.js';
 import { identity } from '../src/config/constant.js';
 
 const main = async () => {
   await prismaClient.akun.upsert({
-    where: { email: 'admin_dinas' },
+    where: { email: 'dinas.admin@palmsafe.com' },
     update: {},
     create: {
-      email: 'admin_dinas',
-      password: await argon2.hash('admin_dinas'),
+      email: 'dinas.admin@palmsafe.com',
+      password: await argon2.hash('Dinas@Palmsafe2023'),
       role: identity.dinas.databaseRole,
       [identity.dinas.tableName]: {
         create: {
@@ -22,11 +22,11 @@ const main = async () => {
   });
 
   await prismaClient.akun.upsert({
-    where: { email: 'admin_pks' },
+    where: { email: 'pks.admin@palmsafe.com' },
     update: {},
     create: {
-      email: 'admin_pks',
-      password: await argon2.hash('admin_pks'),
+      email: 'pks.admin@palmsafe.com',
+      password: await argon2.hash('Pks@Palmsafe2023'),
       role: identity.pks.databaseRole,
       [identity.pks.tableName]: {
         create: {
@@ -39,11 +39,11 @@ const main = async () => {
   });
 
   const koperasi = await prismaClient.akun.upsert({
-    where: { email: 'admin_koperasi' },
+    where: { email: 'koperasi.admin@palmsafe.com' },
     update: {},
     create: {
-      email: 'admin_koperasi',
-      password: await argon2.hash('admin_koperasi'),
+      email: 'koperasi.admin@palmsafe.com',
+      password: await argon2.hash('Koperasi@Palmsafe2023'),
       role: identity.koperasi.databaseRole,
       [identity.koperasi.tableName]: {
         create: {
@@ -63,11 +63,11 @@ const main = async () => {
   });
 
   await prismaClient.akun.upsert({
-    where: { email: 'admin_petani' },
+    where: { email: 'petani.admin@palmsafe.com' },
     update: {},
     create: {
-      email: 'admin_petani',
-      password: await argon2.hash('admin_petani'),
+      email: 'petani.admin@palmsafe.com',
+      password: await argon2.hash('Petani@Palmsafe2023'),
       role: identity.petani.databaseRole,
       [identity.petani.tableName]: {
         create: {
@@ -81,7 +81,7 @@ const main = async () => {
   });
 
   // Create a Fabric wallet for each organization
-  await createDefaultWallet();
+  await createOrganizationAdminWallet();
 };
 
 main()
