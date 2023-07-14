@@ -1,31 +1,10 @@
-import { readFileSync } from 'fs';
 import FabricCAServices from 'fabric-ca-client';
 
 import wallet from '../applications/wallet.js';
-
-const { orgs } = JSON.parse(readFileSync('src/config/fabric-connection-profiles.json', 'utf8'));
-
-const getOrganizationInfo = (organizationName) => {
-  const { email, password, msp, connectionProfile } = orgs[organizationName];
-  const { certificateAuthorities } = JSON.parse(connectionProfile);
-  const { url, caName, httpOptions, tlsCACerts } = certificateAuthorities[Object.keys(certificateAuthorities)[0]];
-
-  return {
-    email,
-    password,
-    msp,
-    certificateAuthority: {
-      url,
-      caName,
-      httpOptions,
-      tlsCACerts,
-    },
-    connectionProfile: JSON.parse(connectionProfile),
-  };
-};
+import util from '../utils/util.js';
 
 const enrollAdmin = async (organizationName) => {
-  const { email, password, msp, certificateAuthority } = getOrganizationInfo(organizationName);
+  const { email, password, msp, certificateAuthority } = await util.getOrganizationInfo(organizationName);
 
   // Check if the admin is already enrolled
   const adminWallet = await wallet.get(email);
@@ -59,7 +38,7 @@ const enrollAdmin = async (organizationName) => {
 };
 
 const registerEnrollUser = async (email, organizationName) => {
-  const { email: adminEmail, msp, certificateAuthority } = getOrganizationInfo(organizationName);
+  const { email: adminEmail, msp, certificateAuthority } = await util.getOrganizationInfo(organizationName);
 
   const userWallet = await wallet.get(email);
   if (userWallet) {
@@ -110,9 +89,12 @@ const registerEnrollUser = async (email, organizationName) => {
 };
 
 const enrollAllAdmin = async () => {
+  const fabricConfig = await util.readFile('src/config/fabric-config.json');
+  const { orgs } = JSON.parse(fabricConfig);
+
   Object.keys(orgs).map(async (organizationName) => {
     await enrollAdmin(organizationName);
   });
 };
 
-export default { registerEnrollUser, enrollAllAdmin, getOrganizationInfo };
+export default { registerEnrollUser, enrollAllAdmin };

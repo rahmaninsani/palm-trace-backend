@@ -9,7 +9,7 @@ Accept: application/json
   "nama": "Petani Test",
   "alamat": "Jl Petani Test",
   "nomorTelepon": "081234567890",
-  "email": "petani.test@gmail.com",
+  "email": "petani.test99@gmail.com",
   "password": "test"
 }
 
@@ -20,7 +20,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "petani.test@gmail.com",
+  "email": "petani.test99@gmail.com",
   "password": "test"
 }
 
@@ -43,9 +43,9 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "namaPks": "PKS 2",
-  "namaKoperasi": "Koperasi 2",
-  "namaPetani": "Petani 2",
+  "namaPks": "PKS 1",
+  "namaKoperasi": "Koperasi 1",
+  "namaPetani": "Petani 1",
   "hargaA": 2000,
   "hargaB": 3100,
   "tanggalA": "2023-07-07",
@@ -61,6 +61,6 @@ Accept: application/json
 
 ###
 // Get Transaksi
-GET http://localhost:9999/api/transaksi/TRX0001
+GET http://localhost:9999/api/transaksi/TRX999
 Content-Type: application/json
 Accept: application/json

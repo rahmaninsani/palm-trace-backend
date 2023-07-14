@@ -1,3 +1,14 @@
+import fs from 'fs/promises';
+
+const readFile = async (pathFilename) => {
+  try {
+    const result = await fs.readFile(pathFilename, 'utf8');
+    return result;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const getAttributeName = (type) => {
   type = type.toLowerCase();
 
@@ -40,4 +51,24 @@ const getAttributeName = (type) => {
   throw new Error('Invalid type');
 };
 
-export default { getAttributeName };
+const getOrganizationInfo = async (organizationName) => {
+  const fabricConfig = await readFile('src/config/fabric-config.json');
+  const { email, password, msp, connectionProfile } = JSON.parse(fabricConfig).orgs[organizationName];
+  const { certificateAuthorities } = connectionProfile;
+  const { url, caName, httpOptions, tlsCACerts } = certificateAuthorities[Object.keys(certificateAuthorities)[0]];
+
+  return {
+    email,
+    password,
+    msp,
+    certificateAuthority: {
+      url,
+      caName,
+      httpOptions,
+      tlsCACerts,
+    },
+    connectionProfile,
+  };
+};
+
+export default { readFile, getAttributeName, getOrganizationInfo };
