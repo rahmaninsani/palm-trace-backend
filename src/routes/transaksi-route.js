@@ -8,5 +8,7 @@ const router = express.Router();
 router.use(authMiddleware);
 
 router.post('/api/transaksi', transaksiController.create);
+router.get('/api/transaksi/:id', transaksiController.get);
+router.get('/api/transaksi', transaksiController.getAll);
 
 export default router;

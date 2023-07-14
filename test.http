@@ -52,3 +52,15 @@ Accept: application/json
   "tanggalB": "2023-07-07",
   "status": "Selesai"
 }
+
+###
+// Get All Transaksi
+GET http://localhost:9999/api/transaksi
+Content-Type: application/json
+Accept: application/json
+
+###
+// Get Transaksi
+GET http://localhost:9999/api/transaksi/TRX0001
+Content-Type: application/json
+Accept: application/json
