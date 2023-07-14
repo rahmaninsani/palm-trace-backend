@@ -43,12 +43,12 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "namaPks": "PKS",
-  "namaKoperasi": "Koperasi",
-  "namaPetani": "Petani",
-  "hargaA": 1000,
-  "hargaB": 2100,
-  "tanggalA": "2023-06-07",
-  "tanggalB": "2023-06-07",
-  "status": "Pending"
+  "namaPks": "PKS 2",
+  "namaKoperasi": "Koperasi 2",
+  "namaPetani": "Petani 2",
+  "hargaA": 2000,
+  "hargaB": 3100,
+  "tanggalA": "2023-07-07",
+  "tanggalB": "2023-07-07",
+  "status": "Selesai"
 }

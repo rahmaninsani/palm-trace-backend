@@ -18,4 +18,4 @@ npm-debug.log*
 # .idea
 .idea
 
-fabric-config.json
+fabric-connection-profiles.json

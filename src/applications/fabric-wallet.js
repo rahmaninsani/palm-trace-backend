@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { DefaultEventHandlerStrategies, DefaultQueryHandlerStrategies, Gateway } from 'fabric-network';
 
-const { orgs } = JSON.parse(readFileSync('src/config/fabric-config.json', 'utf8'));
+const { orgs } = JSON.parse(readFileSync('src/config/fabric-connection-profiles.json', 'utf8'));
 
 const createOrganizationAdminWallet = async () => {
   for (const [organizationName, value] of Object.entries(orgs)) {

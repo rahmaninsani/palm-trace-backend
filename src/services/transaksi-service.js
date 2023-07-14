@@ -4,7 +4,7 @@ import { Gateway, DefaultEventHandlerStrategies } from 'fabric-network';
 import wallet from '../applications/wallet.js';
 import util from '../utils/util.js';
 
-const { orgs } = JSON.parse(readFileSync('src/config/fabric-config.json', 'utf8'));
+import walletService from './wallet-service.js';
 
 const submit = async (req) => {
   const { body: request, user } = req;
@@ -16,7 +16,7 @@ const submit = async (req) => {
   const values = [
     'K0001',
     'D0001',
-    'TRX0001',
+    'TRX0002',
     request.namaPks,
     request.namaKoperasi,
     request.namaPetani,
@@ -26,21 +26,19 @@ const submit = async (req) => {
     request.tanggalB,
     request.status,
   ];
-  const userWallet = await wallet.get(user.email);
+
+  // const userWallet = await wallet.get(user.email);
 
   const connectOptions = {
-    wallet: userWallet,
-    identity: request.email,
+    wallet,
+    identity: user.email,
     discovery: { enabled: true, asLocalhost: true },
     eventHandlerOptions: DefaultEventHandlerStrategies.NONE,
   };
 
   const gateway = new Gateway();
-  const connectionProfile = JSON.parse(orgs[organizationName].connectionProfile);
-  console.log(connectionProfile);
+  const { connectionProfile } = walletService.getOrganizationInfo(organizationName);
   await gateway.connect(connectionProfile, connectOptions);
-
-  console.log(gateway);
 
   const network = await gateway.getNetwork(channelName);
   const contract = network.getContract(chaincodeName);
@@ -48,7 +46,11 @@ const submit = async (req) => {
   const transaction = contract.createTransaction(transactionName);
   const payload = await transaction.submit(...values);
 
-  return JSON.parse(payload.toString());
+  gateway.disconnect();
+
+  return {
+    result: payload.toString(),
+  };
 };
 
 export default { submit };

@@ -3,10 +3,10 @@ import FabricCAServices from 'fabric-ca-client';
 
 import wallet from '../applications/wallet.js';
 
-const { orgs } = JSON.parse(readFileSync('src/config/fabric-config.json', 'utf8'));
+const { orgs } = JSON.parse(readFileSync('src/config/fabric-connection-profiles.json', 'utf8'));
 
 const getOrganizationInfo = (organizationName) => {
-  const { email, password, msp, connectionProfile, certificate, privateKey } = orgs[organizationName];
+  const { email, password, msp, connectionProfile } = orgs[organizationName];
   const { certificateAuthorities } = JSON.parse(connectionProfile);
   const { url, caName, httpOptions, tlsCACerts } = certificateAuthorities[Object.keys(certificateAuthorities)[0]];
 
@@ -14,21 +14,18 @@ const getOrganizationInfo = (organizationName) => {
     email,
     password,
     msp,
-    connectionProfile: {
-      certificateAuthority: {
-        url,
-        caName,
-        httpOptions,
-        tlsCACerts,
-      },
+    certificateAuthority: {
+      url,
+      caName,
+      httpOptions,
+      tlsCACerts,
     },
-    certificate,
-    privateKey,
+    connectionProfile: JSON.parse(connectionProfile),
   };
 };
 
 const enrollAdmin = async (organizationName) => {
-  const { email, password, msp, connectionProfile } = getOrganizationInfo(organizationName);
+  const { email, password, msp, certificateAuthority } = getOrganizationInfo(organizationName);
 
   // Check if the admin is already enrolled
   const adminWallet = await wallet.get(email);
@@ -38,8 +35,8 @@ const enrollAdmin = async (organizationName) => {
   }
 
   // If admin not enrolled, enroll the admin user
-  const { url, caName, httpOptions, tlsCACerts } = connectionProfile.certificateAuthority;
-  const ca = new FabricCAServices(url, { trustedRoots: tlsCACerts, verify: httpOptions.verify }, caName);
+  const { url, caName, httpOptions, tlsCACerts } = certificateAuthority;
+  const ca = new FabricCAServices(url, { trustedRoots: tlsCACerts.pem, verify: httpOptions.verify }, caName);
 
   // Enroll admin
   const enrollment = await ca.enroll({
@@ -62,7 +59,7 @@ const enrollAdmin = async (organizationName) => {
 };
 
 const registerEnrollUser = async (email, organizationName) => {
-  const { email: adminEmail, msp, connectionProfile } = getOrganizationInfo(organizationName);
+  const { email: adminEmail, msp, certificateAuthority } = getOrganizationInfo(organizationName);
 
   const userWallet = await wallet.get(email);
   if (userWallet) {
@@ -77,8 +74,8 @@ const registerEnrollUser = async (email, organizationName) => {
     adminWallet = await wallet.get(adminEmail);
   }
 
-  const { url, caName, httpOptions, tlsCACerts } = connectionProfile.certificateAuthority;
-  const ca = new FabricCAServices(url, { trustedRoots: tlsCACerts, verify: httpOptions.verify }, caName);
+  const { url, caName, httpOptions, tlsCACerts } = certificateAuthority;
+  const ca = new FabricCAServices(url, { trustedRoots: tlsCACerts.pem, verify: httpOptions.verify }, caName);
   const provider = wallet.getProviderRegistry().getProvider(adminWallet.type);
   const adminUser = await provider.getUserContext(adminWallet, adminEmail);
 
