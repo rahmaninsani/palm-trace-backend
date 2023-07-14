@@ -118,4 +118,4 @@ const enrollAllAdmin = async () => {
   });
 };
 
-export default { registerEnrollUser, enrollAllAdmin };
+export default { registerEnrollUser, enrollAllAdmin, getOrganizationInfo };
