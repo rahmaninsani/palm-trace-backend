@@ -9,7 +9,7 @@ Accept: application/json
   "nama": "Petani Test",
   "alamat": "Jl Petani Test",
   "nomorTelepon": "081234567890",
-  "email": "petani.test99@gmail.com",
+  "email": "petani.test@gmail.com",
   "password": "test"
 }
 
@@ -20,7 +20,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "petani.test99@gmail.com",
+  "email": "petani.test@gmail.com",
   "password": "test"
 }
 
