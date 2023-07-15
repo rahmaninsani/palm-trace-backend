@@ -61,6 +61,6 @@ Accept: application/json
 
 ###
 // Get Transaksi
-GET http://localhost:9999/api/transaksi/TRX999
+GET http://localhost:9999/api/transaksi/TRX0001
 Content-Type: application/json
 Accept: application/json

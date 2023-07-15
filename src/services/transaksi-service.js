@@ -3,9 +3,9 @@ import fabricTransaction from '../applications/fabric.js';
 const create = async (req) => {
   const { body: request, user } = req;
   const values = [
-    'K999',
-    'D999',
-    'TRX986',
+    'K001',
+    'D001',
+    'TRX001',
     request.namaPks,
     request.namaKoperasi,
     request.namaPetani,
