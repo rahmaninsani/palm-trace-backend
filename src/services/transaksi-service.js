@@ -1,4 +1,4 @@
-import fabricTransaction from '../applications/fabric.js';
+import fabricClient from '../applications/fabric.js';
 
 const create = async (req) => {
   const { body: request, user } = req;
@@ -15,7 +15,6 @@ const create = async (req) => {
     request.tanggalB,
     request.status,
   ];
-
   const connection = {
     email: user.email,
     role: user.role,
@@ -23,16 +22,14 @@ const create = async (req) => {
     chaincodeName: 'transaksi-chaincode',
     chaincodeMethodName: 'CreateAsset',
   };
-  const transaction = await fabricTransaction(connection);
-  const transactionResult = await transaction.submit(...values);
 
-  return transactionResult.toString() || 'Transaksi berhasil ditambahkan';
+  const submitTransaction = await fabricClient.submitTransaction(connection, values);
+  return submitTransaction.toString() || 'Transaksi berhasil ditambahkan';
 };
 
 const get = async (req) => {
   const { params, user } = req;
   const values = [params.id];
-
   const connection = {
     email: user.email,
     role: user.role,
@@ -40,15 +37,14 @@ const get = async (req) => {
     chaincodeName: 'transaksi-chaincode',
     chaincodeMethodName: 'ReadAsset',
   };
-  const transaction = await fabricTransaction(connection);
-  const transactionResult = await transaction.submit(...values);
 
-  return JSON.parse(transactionResult.toString());
+  const submitTransaction = await fabricClient.submitTransaction(connection, values);
+  return JSON.parse(submitTransaction.toString());
 };
 
 const getAll = async (req) => {
   const { user } = req;
-
+  const values = [];
   const connection = {
     email: user.email,
     role: user.role,
@@ -56,10 +52,9 @@ const getAll = async (req) => {
     chaincodeName: 'transaksi-chaincode',
     chaincodeMethodName: 'GetAllAssets',
   };
-  const transaction = await fabricTransaction(connection);
-  const transactionResult = await transaction.submit([]);
 
-  return JSON.parse(transactionResult.toString());
+  const submitTransaction = await fabricClient.submitTransaction(connection, values);
+  return JSON.parse(submitTransaction.toString());
 };
 
 export default { create, get, getAll };
