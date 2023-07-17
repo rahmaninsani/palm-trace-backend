@@ -37,7 +37,7 @@ const enrollAdmin = async (organizationName) => {
   console.log(`Successfully enrolled ${email} of ${organizationName} admin and imported it into the wallet`);
 };
 
-const registerEnrollUser = async (email, organizationName) => {
+const registerEnrollUser = async (email, affiliationName, organizationName) => {
   const { email: adminEmail, msp, certificateAuthority } = await util.getOrganizationInfo(organizationName);
 
   const userWallet = await wallet.get(email);
@@ -63,7 +63,7 @@ const registerEnrollUser = async (email, organizationName) => {
     {
       enrollmentID: email,
       role: 'client',
-      affiliation: '',
+      affiliation: affiliationName,
     },
     adminUser
   );

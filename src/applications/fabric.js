@@ -23,27 +23,31 @@ const openTransactionConnection = async ({ email, role, channelName, chaincodeNa
   return transaction;
 };
 
-const submitTransaction = async ({ email, role, channelName, chaincodeName, chaincodeMethodName }, values) => {
-  const transactionConnection = openTransactionConnection({
+const submitTransaction = async ({ email, role, channelName, chaincodeName, chaincodeMethodName }, payload) => {
+  const transactionConnection = await openTransactionConnection({
     email,
     role,
     channelName,
     chaincodeName,
     chaincodeMethodName,
   });
-  const result = await transactionConnection.submit(...values);
+
+  const payloadJSON = JSON.stringify(payload);
+  const result = await transactionConnection.submit(payloadJSON);
   return result;
 };
 
 const evaluateTransaction = async ({ email, role, channelName, chaincodeName, chaincodeMethodName }, values) => {
-  const transactionConnection = openTransactionConnection({
+  const transactionConnection = await openTransactionConnection({
     email,
     role,
     channelName,
     chaincodeName,
     chaincodeMethodName,
   });
-  const result = await transactionConnection.evaluate(...values);
+
+  const payloadJSON = JSON.stringify(payload);
+  const result = await transactionConnection.evaluate(payloadJSON);
   return result;
 };
 

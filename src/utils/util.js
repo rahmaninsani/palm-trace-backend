@@ -18,6 +18,7 @@ const getAttributeName = (type) => {
       tableName: 'dinas',
       databaseRoleName: 'DINAS',
       organizationName: 'Dinas',
+      affiliationName: 'dinas.user',
     };
   }
 
@@ -27,6 +28,7 @@ const getAttributeName = (type) => {
       tableName: 'pabrikKelapaSawit',
       databaseRoleName: 'PABRIK_KELAPA_SAWIT',
       organizationName: 'PabrikKelapaSawit',
+      affiliationName: 'pabrikkelapasawit.user',
     };
   }
 
@@ -36,6 +38,7 @@ const getAttributeName = (type) => {
       tableName: 'koperasi',
       databaseRoleName: 'KOPERASI',
       organizationName: 'Koperasi',
+      affiliationName: 'koperasi.user',
     };
   }
 
@@ -45,6 +48,7 @@ const getAttributeName = (type) => {
       tableName: 'petani',
       databaseRoleName: 'PETANI',
       organizationName: 'Petani',
+      affiliationName: 'petani.user',
     };
   }
 

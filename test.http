@@ -5,11 +5,11 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "role": "petani",
-  "nama": "Petani Test",
-  "alamat": "Jl Petani Test",
+  "role": "dinas",
+  "nama": "Dinas Test",
+  "alamat": "Jl Dinas Test",
   "nomorTelepon": "081234567890",
-  "email": "petani.test@gmail.com",
+  "email": "dinas.test@gmail.com",
   "password": "test"
 }
 
@@ -20,7 +20,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "petani.test@gmail.com",
+  "email": "dinas.test@gmail.com",
   "password": "test"
 }
 
@@ -37,30 +37,24 @@ Content-Type: application/json
 Accept: application/json
 
 ###
-// Create Assets
-POST http://localhost:9999/api/transaksi
+// Tambah Referensi Harga
+POST http://localhost:9999/api/referensi-harga
 Content-Type: application/json
 Accept: application/json
 
 {
-  "namaPks": "PKS 1",
-  "namaKoperasi": "Koperasi 1",
-  "namaPetani": "Petani 1",
-  "hargaA": 2000,
-  "hargaB": 3100,
-  "tanggalA": "2023-07-07",
-  "tanggalB": "2023-07-07",
-  "status": "Selesai"
+  "umurTanam": 3,
+  "harga": 3000
 }
 
 ###
-// Get All Transaksi
-GET http://localhost:9999/api/transaksi
+// Get All Referensi Harga
+GET http://localhost:9999/api/referensi-harga
 Content-Type: application/json
 Accept: application/json
 
 ###
 // Get Transaksi
-GET http://localhost:9999/api/transaksi/TRX0001
+GET http://localhost:9999/api/referensi-harga/8eebbd34-dba0-4fcc-ad1f-a046617ff82c
 Content-Type: application/json
 Accept: application/json

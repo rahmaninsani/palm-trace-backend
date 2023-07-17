@@ -10,7 +10,9 @@ import walletService from './wallet-service.js';
 
 const register = async (request) => {
   const userRequest = validate(registerUserValidation, request);
-  const { tableName, databaseRoleName, roleName, organizationName } = util.getAttributeName(userRequest.role);
+  const { tableName, databaseRoleName, roleName, organizationName, affiliationName } = util.getAttributeName(
+    userRequest.role
+  );
 
   const countAkun = await prismaClient.akun.count({
     where: {
@@ -67,7 +69,7 @@ const register = async (request) => {
   }
 
   // Register and enroll to Fabric
-  await walletService.registerEnrollUser(userRequest.email, organizationName);
+  await walletService.registerEnrollUser(userRequest.email, affiliationName, organizationName);
 
   return {
     nama: userAccount[tableName].nama,
