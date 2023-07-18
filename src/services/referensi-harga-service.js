@@ -49,7 +49,6 @@ const update = async (user, request) => {
 };
 
 const get = async (user, idRefererensiHarga) => {
-  const payload = { id: idRefererensiHarga };
   const connection = {
     email: user.email,
     role: user.role,
@@ -58,7 +57,7 @@ const get = async (user, idRefererensiHarga) => {
     chaincodeMethodName: 'GetHistoryById',
   };
 
-  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, payload);
+  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idRefererensiHarga);
   const result = JSON.parse(evaluateTransaction.toString());
 
   return result;
