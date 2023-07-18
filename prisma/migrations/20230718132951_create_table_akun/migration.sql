@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE `akun` (
-    `id` BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID(), 1)),
+    `id` CHAR(36) NOT NULL,
     `email` VARCHAR(200) NOT NULL,
     `password` VARCHAR(200) NOT NULL,
     `role` ENUM('DINAS', 'PETANI', 'KOPERASI', 'PABRIK_KELAPA_SAWIT') NOT NULL,

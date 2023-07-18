@@ -29,6 +29,7 @@ const login = async (req, res, next) => {
 const me = async (req, res, next) => {
   try {
     const { email } = req.user;
+
     const result = await authService.me(email);
 
     res.status(200).json({

@@ -3,12 +3,12 @@ import { Gateway, DefaultEventHandlerStrategies } from 'fabric-network';
 import wallet from './wallet.js';
 import util from '../utils/util.js';
 
-const openTransactionConnection = async ({ email, role, channelName, chaincodeName, chaincodeMethodName }) => {
+const openTransactionConnection = async ({ userId, role, channelName, chaincodeName, chaincodeMethodName }) => {
   const { organizationName } = util.getAttributeName(role);
   const { connectionProfile } = await util.getOrganizationInfo(organizationName);
   const options = {
     wallet: wallet,
-    identity: email,
+    identity: userId,
     discovery: { enabled: true, asLocalhost: true },
     eventHandlerOptions: DefaultEventHandlerStrategies.NONE,
   };
@@ -23,9 +23,9 @@ const openTransactionConnection = async ({ email, role, channelName, chaincodeNa
   return transaction;
 };
 
-const submitTransaction = async ({ email, role, channelName, chaincodeName, chaincodeMethodName }, payload) => {
+const submitTransaction = async ({ userId, role, channelName, chaincodeName, chaincodeMethodName }, payload) => {
   const transactionConnection = await openTransactionConnection({
-    email,
+    userId,
     role,
     channelName,
     chaincodeName,
@@ -44,9 +44,9 @@ const submitTransaction = async ({ email, role, channelName, chaincodeName, chai
   return result;
 };
 
-const evaluateTransaction = async ({ email, role, channelName, chaincodeName, chaincodeMethodName }, payload) => {
+const evaluateTransaction = async ({ userId, role, channelName, chaincodeName, chaincodeMethodName }, payload) => {
   const transactionConnection = await openTransactionConnection({
-    email,
+    userId,
     role,
     channelName,
     chaincodeName,

@@ -18,7 +18,7 @@ enum Role {
 }
 
 model Akun {
-  id        Bytes    @id @default(dbgenerated("(UUID_TO_BIN(UUID(), 1))")) @db.Binary(16)
+  id        String   @id @default(uuid()) @db.Char(36)
   email     String   @unique @db.VarChar(200)
   password  String   @db.VarChar(200)
   role      Role
@@ -35,8 +35,8 @@ model Akun {
 }
 
 model Koperasi {
-  id            Bytes    @id @default(dbgenerated("(UUID_TO_BIN(UUID(), 1))")) @db.Binary(16)
-  idAkun        Bytes    @unique @map("id_akun") @db.Binary(16)
+  id            String   @id @default(uuid()) @db.Char(36)
+  idAkun        String   @unique @map("id_akun") @db.Char(36)
   siup          String?  @unique @db.Char(50)
   nama          String   @db.VarChar(200)
   alamat        String   @db.Text()
@@ -53,9 +53,9 @@ model Koperasi {
 }
 
 model Petani {
-  id            Bytes    @id @default(dbgenerated("(UUID_TO_BIN(UUID(), 1))")) @db.Binary(16)
-  idAkun        Bytes    @unique @map("id_akun") @db.Binary(16)
-  idKoperasi    Bytes    @map("id_koperasi") @db.Binary(16)
+  id            String   @id @default(uuid()) @db.Char(36)
+  idAkun        String   @unique @map("id_akun") @db.Char(36)
+  idKoperasi    String   @map("id_koperasi") @db.Char(36)
   nik           String?  @unique @db.Char(16)
   nama          String   @db.VarChar(200)
   alamat        String   @db.Text()
@@ -72,8 +72,8 @@ model Petani {
 }
 
 model PabrikKelapaSawit {
-  id            Bytes    @id @default(dbgenerated("(UUID_TO_BIN(UUID(), 1))")) @db.Binary(16)
-  idAkun        Bytes    @unique @map("id_akun") @db.Binary(16)
+  id            String   @id @default(uuid()) @db.Char(36)
+  idAkun        String   @unique @map("id_akun") @db.Char(36)
   siup          String?  @unique @db.Char(50)
   nama          String   @db.VarChar(200)
   alamat        String   @db.Text()
@@ -89,8 +89,8 @@ model PabrikKelapaSawit {
 }
 
 model Dinas {
-  id           Bytes    @id @default(dbgenerated("(UUID_TO_BIN(UUID(), 1))")) @db.Binary(16)
-  idAkun       Bytes    @unique @map("id_akun") @db.Binary(16)
+  id           String   @id @default(uuid()) @db.Char(36)
+  idAkun       String   @unique @map("id_akun") @db.Char(36)
   nama         String   @db.VarChar(200)
   alamat       String   @db.Text()
   nomorTelepon String   @map("nomor_telepon") @db.VarChar(20)

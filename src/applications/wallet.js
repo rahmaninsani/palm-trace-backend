@@ -7,7 +7,7 @@ class WalletStore {
   async get(label) {
     const user = await prismaClient.akun.findUnique({
       where: {
-        email: label,
+        id: label,
       },
       select: {
         wallet: true,
@@ -35,7 +35,7 @@ class WalletStore {
   async put(label, data) {
     await prismaClient.akun.update({
       where: {
-        email: label,
+        id: label,
       },
       data: {
         wallet: data.toString('utf8'),
@@ -46,7 +46,7 @@ class WalletStore {
   async remove(label) {
     await prismaClient.akun.update({
       where: {
-        email: label,
+        id: label,
       },
       data: {
         wallet: null,

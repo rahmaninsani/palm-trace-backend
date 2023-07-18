@@ -15,7 +15,7 @@ const create = async (user, request) => {
     tanggalPembaruan: time.getCurrentTime(),
   };
   const connection = {
-    email: user.email,
+    userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,
@@ -36,7 +36,7 @@ const update = async (user, request) => {
     tanggalPembaruan: time.getCurrentTime(),
   };
   const connection = {
-    email: user.email,
+    userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,
@@ -50,7 +50,7 @@ const update = async (user, request) => {
 
 const get = async (user, idRefererensiHarga) => {
   const connection = {
-    email: user.email,
+    userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,
@@ -65,7 +65,7 @@ const get = async (user, idRefererensiHarga) => {
 
 const getAll = async (user) => {
   const connection = {
-    email: user.email,
+    userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,

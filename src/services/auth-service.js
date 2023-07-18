@@ -60,6 +60,7 @@ const register = async (request) => {
           nama: true,
         },
       },
+      id: true,
       email: true,
     },
   });
@@ -69,7 +70,7 @@ const register = async (request) => {
   }
 
   // Register and enroll to Fabric
-  await walletService.registerEnrollUser(userRequest.email, affiliationName, organizationName);
+  await walletService.registerEnrollUser(userAccount.id, affiliationName, organizationName);
 
   return {
     nama: userAccount[tableName].nama,

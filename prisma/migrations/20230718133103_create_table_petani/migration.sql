@@ -1,14 +1,8 @@
--- AlterTable
-ALTER TABLE `akun` MODIFY `id` BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID(), 1));
-
--- AlterTable
-ALTER TABLE `koperasi` MODIFY `id` BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID(), 1));
-
 -- CreateTable
 CREATE TABLE `petani` (
-    `id` BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID(), 1)),
-    `id_akun` BINARY(16) NOT NULL,
-    `id_koperasi` BINARY(16) NOT NULL,
+    `id` CHAR(36) NOT NULL,
+    `id_akun` CHAR(36) NOT NULL,
+    `id_koperasi` CHAR(36) NOT NULL,
     `nik` CHAR(16) NULL,
     `nama` VARCHAR(200) NOT NULL,
     `alamat` TEXT NOT NULL,

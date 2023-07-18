@@ -1,19 +1,7 @@
--- AlterTable
-ALTER TABLE `akun` MODIFY `id` BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID(), 1));
-
--- AlterTable
-ALTER TABLE `koperasi` MODIFY `id` BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID(), 1));
-
--- AlterTable
-ALTER TABLE `pabrik_kelapa_sawit` MODIFY `id` BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID(), 1));
-
--- AlterTable
-ALTER TABLE `petani` MODIFY `id` BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID(), 1));
-
 -- CreateTable
 CREATE TABLE `dinas` (
-    `id` BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID(), 1)),
-    `id_akun` BINARY(16) NOT NULL,
+    `id` CHAR(36) NOT NULL,
+    `id_akun` CHAR(36) NOT NULL,
     `nama` VARCHAR(200) NOT NULL,
     `alamat` TEXT NOT NULL,
     `nomor_telepon` VARCHAR(20) NOT NULL,

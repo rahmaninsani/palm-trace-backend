@@ -12,14 +12,18 @@ const authMiddleware = async (req, res, next) => {
       .end();
   }
 
-  const akun = await prismaClient.$queryRaw`
-    SELECT BIN_TO_UUID(id) as id, email, role
-    FROM akun
-    WHERE email = ${userEmail}
-    LIMIT 1
-  `;
+  const akun = await prismaClient.akun.findFirst({
+    where: {
+      email: userEmail,
+    },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+    },
+  });
 
-  if (!akun || !akun[0]) {
+  if (!akun) {
     return res
       .status(401)
       .json({
@@ -28,7 +32,7 @@ const authMiddleware = async (req, res, next) => {
       .end();
   }
 
-  req.user = akun[0];
+  req.user = akun;
   next();
 };
 

@@ -1,13 +1,22 @@
 import FabricCAServices from 'fabric-ca-client';
 
+import prismaClient from '../applications/database.js';
 import wallet from '../applications/wallet.js';
 import util from '../utils/util.js';
 
 const enrollAdmin = async (organizationName) => {
   const { email, password, msp, certificateAuthority } = await util.getOrganizationInfo(organizationName);
+  const { id } = await prismaClient.akun.findUnique({
+    where: {
+      email: email,
+    },
+    select: {
+      id: true,
+    },
+  });
 
   // Check if the admin is already enrolled
-  const adminWallet = await wallet.get(email);
+  const adminWallet = await wallet.get(id);
   if (adminWallet) {
     console.log(`${email} already exists in the ${organizationName} admin wallet`);
     return false;
@@ -33,35 +42,43 @@ const enrollAdmin = async (organizationName) => {
     type: 'X.509',
   };
 
-  await wallet.put(email, identity);
+  await wallet.put(id, identity);
   console.log(`Successfully enrolled ${email} of ${organizationName} admin and imported it into the wallet`);
 };
 
-const registerEnrollUser = async (email, affiliationName, organizationName) => {
-  const { email: adminEmail, msp, certificateAuthority } = await util.getOrganizationInfo(organizationName);
-
-  const userWallet = await wallet.get(email);
+const registerEnrollUser = async (userId, affiliationName, organizationName) => {
+  const userWallet = await wallet.get(userId);
   if (userWallet) {
-    console.log(`${email} already exists in the ${organizationName} user wallet`);
+    console.log(`${userId} already exists in the ${organizationName} user wallet`);
     return false;
   }
 
+  const { email: adminEmail, msp, certificateAuthority } = await util.getOrganizationInfo(organizationName);
+  const { id: adminId } = await prismaClient.akun.findUnique({
+    where: {
+      email: adminEmail,
+    },
+    select: {
+      id: true,
+    },
+  });
+
   // Check if admin identity exists in the wallet
-  let adminWallet = await wallet.get(adminEmail);
+  let adminWallet = await wallet.get(adminId);
   if (!adminWallet) {
     await enrollAdmin(organizationName);
-    adminWallet = await wallet.get(adminEmail);
+    adminWallet = await wallet.get(adminId);
   }
 
   const { url, caName, httpOptions, tlsCACerts } = certificateAuthority;
   const ca = new FabricCAServices(url, { trustedRoots: tlsCACerts.pem, verify: httpOptions.verify }, caName);
   const provider = wallet.getProviderRegistry().getProvider(adminWallet.type);
-  const adminUser = await provider.getUserContext(adminWallet, adminEmail);
+  const adminUser = await provider.getUserContext(adminWallet, adminId);
 
   // Register user
   const secret = await ca.register(
     {
-      enrollmentID: email,
+      enrollmentID: userId,
       role: 'client',
       affiliation: affiliationName,
     },
@@ -70,7 +87,7 @@ const registerEnrollUser = async (email, affiliationName, organizationName) => {
 
   // Enroll user
   const enrollment = await ca.enroll({
-    enrollmentID: email,
+    enrollmentID: userId,
     enrollmentSecret: secret,
   });
 
@@ -84,8 +101,8 @@ const registerEnrollUser = async (email, affiliationName, organizationName) => {
     type: 'X.509',
   };
 
-  await wallet.put(email, identity);
-  console.log(`Successfully registered and enrolled ${email} of ${organizationName} user and imported it into the wallet`);
+  await wallet.put(userId, identity);
+  console.log(`Successfully registered and enrolled ${userId} of ${organizationName} user and imported it into the wallet`);
 };
 
 const enrollAllAdmin = async () => {
