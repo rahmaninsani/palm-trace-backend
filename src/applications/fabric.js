@@ -32,12 +32,19 @@ const submitTransaction = async ({ email, role, channelName, chaincodeName, chai
     chaincodeMethodName,
   });
 
-  const payloadJSON = JSON.stringify(payload);
-  const result = await transactionConnection.submit(payloadJSON);
+  let result;
+  if (payload === undefined) {
+    result = await transactionConnection.submit();
+  } else if (Array.isArray(payload)) {
+    result = await transactionConnection.submit(...payload);
+  } else {
+    result = await transactionConnection.submit(payload);
+  }
+
   return result;
 };
 
-const evaluateTransaction = async ({ email, role, channelName, chaincodeName, chaincodeMethodName }, values) => {
+const evaluateTransaction = async ({ email, role, channelName, chaincodeName, chaincodeMethodName }, payload) => {
   const transactionConnection = await openTransactionConnection({
     email,
     role,
@@ -46,8 +53,15 @@ const evaluateTransaction = async ({ email, role, channelName, chaincodeName, ch
     chaincodeMethodName,
   });
 
-  const payloadJSON = JSON.stringify(payload);
-  const result = await transactionConnection.evaluate(payloadJSON);
+  let result;
+  if (payload === undefined) {
+    result = await transactionConnection.evaluate();
+  } else if (Array.isArray(payload)) {
+    result = await transactionConnection.evaluate(...payload);
+  } else {
+    result = await transactionConnection.evaluate(payload);
+  }
+
   return result;
 };
 

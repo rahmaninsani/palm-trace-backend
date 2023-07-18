@@ -3,8 +3,10 @@ import { v4 as uuidv4 } from 'uuid';
 import fabricClient from '../applications/fabric.js';
 import time from '../utils/time.js';
 
-const create = async (req) => {
-  const { body: request, user } = req;
+const channelName = 'referensi-harga-channel';
+const chaincodeName = 'referensi-harga-chaincode';
+
+const create = async (user, request) => {
   const payload = {
     id: uuidv4(),
     idDinas: user.id,
@@ -15,47 +17,68 @@ const create = async (req) => {
   const connection = {
     email: user.email,
     role: user.role,
-    channelName: 'referensi-harga-channel',
-    chaincodeName: 'referensi-harga-chaincode',
+    channelName,
+    chaincodeName,
     chaincodeMethodName: 'Create',
   };
+  const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
+  const result = JSON.parse(submitTransaction.toString());
 
-  const submitTransaction = await fabricClient.submitTransaction(connection, payload);
-  return {
-    txnHash: submitTransaction.toString(),
-  };
+  return result;
 };
 
-const get = async (req) => {
-  const { params, user } = req;
-  const payload = { id: params.id };
+const update = async (user, request) => {
+  const payload = {
+    id: request.id,
+    idDinas: user.id,
+    umurTanam: request.umurTanam,
+    harga: request.harga,
+    tanggalPembaruan: time.getCurrentTime(),
+  };
   const connection = {
     email: user.email,
     role: user.role,
-    channelName: 'referensi-harga-channel',
-    chaincodeName: 'referensi-harga-chaincode',
-    chaincodeMethodName: 'Get',
+    channelName,
+    chaincodeName,
+    chaincodeMethodName: 'Update',
   };
+  const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
+  const result = JSON.parse(submitTransaction.toString());
 
-  const submitTransaction = await fabricClient.submitTransaction(connection, payload);
-  return JSON.parse(submitTransaction.toString());
+  return result;
 };
 
-const getAll = async (req) => {
-  const { user } = req;
-  const payload = {};
+const get = async (user, idRefererensiHarga) => {
+  const payload = { id: idRefererensiHarga };
   const connection = {
     email: user.email,
     role: user.role,
-    channelName: 'referensi-harga-channel',
-    chaincodeName: 'referensi-harga-chaincode',
+    channelName,
+    chaincodeName,
+    chaincodeMethodName: 'GetHistoryById',
+  };
+
+  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, payload);
+  const result = JSON.parse(evaluateTransaction.toString());
+
+  return result;
+};
+
+const getAll = async (user) => {
+  const connection = {
+    email: user.email,
+    role: user.role,
+    channelName,
+    chaincodeName,
     chaincodeMethodName: 'GetAll',
   };
 
-  const submitTransaction = await fabricClient.submitTransaction(connection, payload);
-  return JSON.parse(submitTransaction.toString());
+  const evaluateTransaction = await fabricClient.evaluateTransaction(connection);
+  const result = JSON.parse(evaluateTransaction.toString());
+
+  return result;
 };
 
-const referensiHargaService = { create, get, getAll };
+const referensiHargaService = { create, update, get, getAll };
 
 export default referensiHargaService;

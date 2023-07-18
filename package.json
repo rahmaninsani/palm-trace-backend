@@ -10,7 +10,8 @@
     "test": "jest -i",
     "db-migrate-dev-create-only": "npx prisma migrate dev --create-only",
     "db-migrate-dev": "npx prisma migrate dev",
-    "db-seed": "node prisma/seed.js"
+    "db-seed": "node prisma/seed.js",
+    "db-reset": "npx prisma db push --force-reset "
   },
   "jest": {
     "transform": {

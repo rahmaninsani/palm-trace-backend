@@ -43,8 +43,19 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "umurTanam": 3,
-  "harga": 3000
+  "umurTanam": 2,
+  "harga": 1000
+}
+
+###
+// Ubah Referensi Harga
+PUT http://localhost:9999/api/referensi-harga/09aabe74-d688-4f12-a214-d525442b5f2c
+Content-Type: application/json
+Accept: application/json
+
+{
+  "umurTanam": 2,
+  "harga": 5000
 }
 
 ###
@@ -55,6 +66,6 @@ Accept: application/json
 
 ###
 // Get Transaksi
-GET http://localhost:9999/api/referensi-harga/8eebbd34-dba0-4fcc-ad1f-a046617ff82c
+GET http://localhost:9999/api/referensi-harga/09aabe74-d688-4f12-a214-d525442b5f2c
 Content-Type: application/json
 Accept: application/json

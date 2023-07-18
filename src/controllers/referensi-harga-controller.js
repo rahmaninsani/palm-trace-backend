@@ -2,8 +2,27 @@ import referensiHargaService from '../services/referensi-harga-service.js';
 
 const create = async (req, res, next) => {
   try {
-    const result = await referensiHargaService.create(req);
+    const user = req.user;
+    const request = req.body;
+
+    const result = await referensiHargaService.create(user, request);
     res.status(201).json({
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const update = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const idRefererensiHarga = req.params.idRefererensiHarga;
+    const request = req.body;
+    request.id = idRefererensiHarga;
+
+    const result = await referensiHargaService.update(user, request);
+    res.status(200).json({
       data: result,
     });
   } catch (error) {
@@ -13,7 +32,10 @@ const create = async (req, res, next) => {
 
 const get = async (req, res, next) => {
   try {
-    const result = await referensiHargaService.get(req);
+    const user = req.user;
+    const idRefererensiHarga = req.params.idRefererensiHarga;
+
+    const result = await referensiHargaService.get(user, idRefererensiHarga);
     res.status(200).json({
       data: result,
     });
@@ -24,7 +46,9 @@ const get = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
   try {
-    const result = await referensiHargaService.getAll(req);
+    const user = req.user;
+
+    const result = await referensiHargaService.getAll(user);
     res.status(200).json({
       data: result,
     });
@@ -33,5 +57,5 @@ const getAll = async (req, res, next) => {
   }
 };
 
-const referensiHargaController = { create, get, getAll };
+const referensiHargaController = { create, update, get, getAll };
 export default referensiHargaController;

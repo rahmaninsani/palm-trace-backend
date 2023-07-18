@@ -8,7 +8,8 @@ const router = express.Router();
 router.use(authMiddleware);
 
 router.post('/api/referensi-harga', referensiHargaController.create);
-router.get('/api/referensi-harga/:id', referensiHargaController.get);
+router.put('/api/referensi-harga/:idRefererensiHarga', referensiHargaController.update);
+router.get('/api/referensi-harga/:idRefererensiHarga', referensiHargaController.get);
 router.get('/api/referensi-harga', referensiHargaController.getAll);
 
 export default router;
