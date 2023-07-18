@@ -36,9 +36,27 @@ DELETE http://localhost:9999/api/users/logout
 Content-Type: application/json
 Accept: application/json
 
+
+###
+// Inisialisasi Referensi Harga
+POST http://localhost:9999/api/referensi-harga-init
+Content-Type: application/json
+Accept: application/json
+
 ###
 // Tambah Referensi Harga
 POST http://localhost:9999/api/referensi-harga
+Content-Type: application/json
+Accept: application/json
+
+{
+  "umurTanam": 1,
+  "harga": 0
+}
+
+###
+// Ubah Referensi Harga
+PUT http://localhost:9999/api/referensi-harga/:idReferensiHarga
 Content-Type: application/json
 Accept: application/json
 
@@ -48,24 +66,13 @@ Accept: application/json
 }
 
 ###
-// Ubah Referensi Harga
-PUT http://localhost:9999/api/referensi-harga/155d4778-a8da-4ff7-a410-ac907f5b7f0f
-Content-Type: application/json
-Accept: application/json
-
-{
-  "umurTanam": 1,
-  "harga": 5000
-}
-
-###
 // Get All Referensi Harga
 GET http://localhost:9999/api/referensi-harga
 Content-Type: application/json
 Accept: application/json
 
 ###
-// Get Transaksi
-GET http://localhost:9999/api/referensi-harga/155d4778-a8da-4ff7-a410-ac907f5b7f0f
+// Get Transaksi with History
+GET http://localhost:9999/api/referensi-harga/:idReferensiHarga
 Content-Type: application/json
 Accept: application/json
