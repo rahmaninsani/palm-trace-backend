@@ -2,7 +2,7 @@ import moment from 'moment';
 import 'moment-timezone';
 
 const getCurrentTime = () => {
-  moment.locale('id_ID');
+  moment.locale('id');
   return moment().tz('Asia/Jakarta').format();
 };
 

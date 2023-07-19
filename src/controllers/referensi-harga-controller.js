@@ -16,8 +16,10 @@ const createInit = async (req, res, next) => {
     const user = req.user;
     let data = [];
 
-    const banyakData = 25;
-    for (let index = 1; index <= banyakData; index++) {
+    const tahunAwal = 3;
+    const tahunAkhir = 25;
+
+    for (let index = tahunAwal; index <= tahunAkhir; index++) {
       const request = {
         umurTanam: index,
         harga: 0,
