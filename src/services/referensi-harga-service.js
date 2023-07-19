@@ -74,8 +74,9 @@ const getAll = async (user) => {
 
   const evaluateTransaction = await fabricClient.evaluateTransaction(connection);
   const result = JSON.parse(evaluateTransaction.toString());
+  const sortedResult = result.sort((a, b) => a.umurTanam - b.umurTanam);
 
-  return result;
+  return sortedResult;
 };
 
 const referensiHargaService = { create, update, get, getAll };
