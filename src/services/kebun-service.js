@@ -34,17 +34,21 @@ const create = async (user, request) => {
 const update = async (user, request) => {
   const payload = {
     id: request.id,
-    idDinas: user.id,
-    umurTanam: request.umurTanam,
-    harga: request.harga,
-    tanggalPembaruan: time.getCurrentTime(),
+    idPetani: user.id,
+    alamat: request.alamat,
+    latitude: request.latitude,
+    longitude: request.longitude,
+    luas: request.luas,
+    nomorRspo: request.nomorRspo,
+    sertifikatRspo: request.sertifikatRspo,
+    // TODO -> tanggalPembaruan: time.getCurrentTime(),
   };
   const connection = {
     userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'Update',
+    chaincodeMethodName: 'UpdateKebun',
   };
   const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
   const result = JSON.parse(submitTransaction.toString());

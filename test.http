@@ -92,3 +92,18 @@ Accept: application/json
   "nomorRspo": "RSPO-1234567890",
   "sertifikatRspo": "sertifikat-rspo-1234567890.pdf"
 }
+
+###
+// Ubah Kebun
+PUT http://localhost:9999/api/users/petani/kebun/3631d8a2-a1d1-44d1-875a-ec05649f2438
+Content-Type: application/json
+Accept: application/json
+
+{
+  "alamat": "Jl Kebun Test II",
+  "latitude": "107.609810",
+  "longitude": "-6.914744",
+  "luas": 500,
+  "nomorRspo": "RSPO-1234567890",
+  "sertifikatRspo": "sertifikat-rspo-1234567890.pdf"
+}

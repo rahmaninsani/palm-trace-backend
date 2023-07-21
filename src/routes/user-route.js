@@ -8,5 +8,6 @@ const router = express.Router();
 router.use(authMiddleware);
 
 router.post('/api/users/petani/kebun', kebunController.create);
+router.put('/api/users/petani/kebun/:idKebun', kebunController.update);
 
 export default router;
