@@ -10,8 +10,8 @@ import morganMiddleware from '../middlewares/morgan-middleware.js';
 import errorMiddleware from '../middlewares/error-middleware.js';
 
 import authRoute from '../routes/auth-route.js';
+import userRoute from '../routes/user-route.js';
 import referensiHargaRoute from '../routes/referensi-harga-route.js';
-import transaksiRoute from '../routes/transaksi-route.js';
 
 dotenv.config();
 
@@ -47,8 +47,8 @@ web.use(
 web.use(morganMiddleware);
 
 web.use(authRoute);
+web.use(userRoute);
 web.use(referensiHargaRoute);
-web.use(transaksiRoute);
 
 web.use(errorMiddleware);
 

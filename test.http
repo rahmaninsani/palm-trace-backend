@@ -5,11 +5,11 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "role": "dinas",
-  "nama": "Dinas Test",
-  "alamat": "Jl Dinas Test",
+  "role": "petani",
+  "nama": "Petani Test",
+  "alamat": "Jl Petani Test",
   "nomorTelepon": "081234567890",
-  "email": "dinas.test@gmail.com",
+  "email": "petani.test@gmail.com",
   "password": "test"
 }
 
@@ -20,7 +20,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "dinas.test@gmail.com",
+  "email": "petani.test@gmail.com",
   "password": "test"
 }
 
@@ -76,3 +76,19 @@ Accept: application/json
 GET http://localhost:9999/api/referensi-harga/:idReferensiHarga
 Content-Type: application/json
 Accept: application/json
+
+
+###
+// Tambah Kebun
+POST http://localhost:9999/api/users/petani/kebun
+Content-Type: application/json
+Accept: application/json
+
+{
+  "alamat": "Jl Kebun Test",
+  "latitude": "107.609810",
+  "longitude": "-6.914744",
+  "luas": 400,
+  "nomorRspo": "RSPO-1234567890",
+  "sertifikatRspo": "sertifikat-rspo-1234567890.pdf"
+}
