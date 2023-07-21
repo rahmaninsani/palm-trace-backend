@@ -56,35 +56,35 @@ const update = async (user, request) => {
   return result;
 };
 
-const get = async (user, idRefererensiHarga) => {
+const get = async (user, idKebun) => {
   const connection = {
     userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'GetHistoryById',
+    chaincodeMethodName: 'GetKebunHistoryById',
   };
 
-  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idRefererensiHarga);
+  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idKebun);
   const result = JSON.parse(evaluateTransaction.toString());
 
   return result;
 };
 
 const getAll = async (user) => {
+  const idPetani = user.id;
   const connection = {
     userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'GetAll',
+    chaincodeMethodName: 'GetAllKebunByIdPetani',
   };
 
-  const evaluateTransaction = await fabricClient.evaluateTransaction(connection);
-  const result = JSON.parse(evaluateTransaction.toString());
-  const sortedResult = result.sort((a, b) => a.umurTanam - b.umurTanam);
+  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idPetani);
+  const result = evaluateTransaction.toString();
 
-  return sortedResult;
+  return result;
 };
 
 const kebunService = { create, update, get, getAll };
