@@ -45,16 +45,16 @@ const get = async (req, res, next) => {
 };
 
 const getAll = async (req, res, next) => {
-  // try {
-  const user = req.user;
+  try {
+    const user = req.user;
 
-  const result = await kebunService.getAll(user);
-  res.status(200).json({
-    data: result,
-  });
-  // } catch (error) {
-  //   next(error);
-  // }
+    const result = await kebunService.getAll(user);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 const kebunController = { create, update, get, getAll };

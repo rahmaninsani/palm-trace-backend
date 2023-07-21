@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import fabricClient from '../applications/fabric.js';
 import time from '../utils/time.js';
+import ResponseError from '../errors/response-error.js';
 
 const channelName = 'referensi-harga-channel';
 const chaincodeName = 'referensi-harga-chaincode';
@@ -22,9 +23,13 @@ const create = async (user, request) => {
     chaincodeMethodName: 'Create',
   };
   const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
-  const result = JSON.parse(submitTransaction.toString());
+  const result = submitTransaction.toString();
 
-  return result;
+  if (result === '') {
+    throw new ResponseError(404, 'Data referensi harga tidak ditemukan');
+  }
+
+  return JSON.parse(result);
 };
 
 const update = async (user, request) => {
@@ -43,9 +48,13 @@ const update = async (user, request) => {
     chaincodeMethodName: 'Update',
   };
   const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
-  const result = JSON.parse(submitTransaction.toString());
+  const result = submitTransaction.toString();
 
-  return result;
+  if (result === '') {
+    throw new ResponseError(404, 'Data referensi harga tidak ditemukan');
+  }
+
+  return JSON.parse(result);
 };
 
 const get = async (user, idRefererensiHarga) => {
@@ -58,9 +67,13 @@ const get = async (user, idRefererensiHarga) => {
   };
 
   const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idRefererensiHarga);
-  const result = JSON.parse(evaluateTransaction.toString());
+  const result = evaluateTransaction.toString();
 
-  return result;
+  if (result === '') {
+    throw new ResponseError(404, 'Data referensi harga tidak ditemukan');
+  }
+
+  return JSON.parse(result);
 };
 
 const getAll = async (user) => {
@@ -73,8 +86,14 @@ const getAll = async (user) => {
   };
 
   const evaluateTransaction = await fabricClient.evaluateTransaction(connection);
-  const result = JSON.parse(evaluateTransaction.toString());
-  const sortedResult = result.sort((a, b) => a.umurTanam - b.umurTanam);
+  const result = evaluateTransaction.toString();
+
+  if (result === '') {
+    throw new ResponseError(404, 'Data referensi harga tidak ditemukan');
+  }
+
+  const parsedResult = JSON.parse(result);
+  const sortedResult = parsedResult.sort((a, b) => a.umurTanam - b.umurTanam);
 
   return sortedResult;
 };
