@@ -1,15 +1,30 @@
 ###
-// Register User
+// Register User PKS
 POST http://localhost:9999/api/users
 Content-Type: application/json
 Accept: application/json
 
 {
-  "role": "petani",
-  "nama": "Petani Test",
-  "alamat": "Jl Petani Test",
+  "role": "pks",
+  "nama": "PKS Test",
+  "alamat": "Jl PKS Test",
   "nomorTelepon": "081234567890",
-  "email": "petani.test@gmail.com",
+  "email": "pks.test@gmail.com",
+  "password": "test"
+}
+
+###
+// Register User Koperasi
+POST http://localhost:9999/api/users
+Content-Type: application/json
+Accept: application/json
+
+{
+  "role": "koperasi",
+  "nama": "Koperasi Test",
+  "alamat": "Jl Koperasi Test",
+  "nomorTelepon": "081234567890",
+  "email": "koperasi.test@gmail.com",
   "password": "test"
 }
 
@@ -20,7 +35,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "petani.test@gmail.com",
+  "email": "pks.test@gmail.com",
   "password": "test"
 }
 
@@ -119,3 +134,17 @@ Accept: application/json
 GET http://localhost:9999/api/users/petani/kebun/:idKebun
 Content-Type: application/json
 Accept: application/json
+
+
+###
+// Tambah Kontrak
+POST http://localhost:9999/api/rantai-pasok/kontrak
+Content-Type: application/json
+Accept: application/json
+
+{
+  "tanggalMulai": "2023-01-01",
+  "tanggalSelesai": "2023-12-31",
+  "kuantitas": 12000,
+  "harga": 1000
+}
