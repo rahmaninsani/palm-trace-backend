@@ -11,7 +11,7 @@ const chaincodeName = 'rantai-pasok-chaincode';
 
 const createKontrak = async (user, request) => {
   // for dev only
-  const idKoperasi = '56aa6fb3-3084-4daf-b97a-acda0fac3281';
+  const idKoperasi = '59734224-6ada-4526-9606-61ca895017af';
 
   const payload = {
     id: uuidv4(),
@@ -41,24 +41,24 @@ const createKontrak = async (user, request) => {
   return JSON.parse(result);
 };
 
-const update = async (user, request) => {
+const confirmContractByKoperasi = async (user, request) => {
+  // for dev only
+  const idPks = 'f52b1818-a08f-463e-ad25-ea9ce953ecf3';
+
   const payload = {
-    id: request.id,
-    idPetani: user.id,
-    alamat: request.alamat,
-    latitude: request.latitude,
-    longitude: request.longitude,
-    luas: request.luas,
-    nomorRspo: request.nomorRspo,
-    sertifikatRspo: request.sertifikatRspo,
-    updatedAt: time.getCurrentTime(),
+    idPks: idPks,
+    idKoperasi: user.id,
+    idKontrak: request.idKontrak,
+    status: request.status,
+    pesan: request.pesan,
+    tanggalRespons: time.getCurrentTime(),
   };
   const connection = {
     userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'Updatekebun',
+    chaincodeMethodName: 'ConfirmContractByKoperasi',
   };
   const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
   const result = submitTransaction.toString();
@@ -112,6 +112,6 @@ const getAll = async (user) => {
   return JSON.parse(result);
 };
 
-const rantaiPasokService = { createKontrak, update, get, getAll };
+const rantaiPasokService = { createKontrak, confirmContractByKoperasi, get, getAll };
 
 export default rantaiPasokService;

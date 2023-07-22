@@ -29,13 +29,24 @@ Accept: application/json
 }
 
 ###
-// Login User
+// Login User PKS
 POST http://localhost:9999/api/users/login
 Content-Type: application/json
 Accept: application/json
 
 {
   "email": "pks.test@gmail.com",
+  "password": "test"
+}
+
+###
+// Login User Koperasi
+POST http://localhost:9999/api/users/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "koperasi.test@gmail.com",
   "password": "test"
 }
 
@@ -147,4 +158,16 @@ Accept: application/json
   "tanggalSelesai": "2023-12-31",
   "kuantitas": 12000,
   "harga": 1000
+}
+
+
+###
+// Konfirmasi Kontrak
+PUT http://localhost:9999/api/rantai-pasok/kontrak/:idKontrak
+Content-Type: application/json
+Accept: application/json
+
+{
+  "status": 1,
+  "pesan": "OK. Kami setuju dengan kontrak tersebut."
 }

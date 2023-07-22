@@ -14,14 +14,14 @@ const createKontrak = async (req, res, next) => {
   }
 };
 
-const update = async (req, res, next) => {
+const confirmContractByKoperasi = async (req, res, next) => {
   try {
     const user = req.user;
-    const idKebun = req.params.idKebun;
+    const idKontrak = req.params.idKontrak;
     const request = req.body;
-    request.id = idKebun;
+    request.idKontrak = idKontrak;
 
-    const result = await kebunService.update(user, request);
+    const result = await rantaiPasokService.confirmContractByKoperasi(user, request);
     res.status(200).json({
       data: result,
     });
@@ -57,5 +57,5 @@ const getAll = async (req, res, next) => {
   }
 };
 
-const rantaiPasokController = { createKontrak, update, get, getAll };
+const rantaiPasokController = { createKontrak, confirmContractByKoperasi, get, getAll };
 export default rantaiPasokController;
