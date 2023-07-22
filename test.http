@@ -148,12 +148,13 @@ Accept: application/json
 
 
 ###
-// Tambah Kontrak
+// Tambah Kontrak by PKS
 POST http://localhost:9999/api/rantai-pasok/kontrak
 Content-Type: application/json
 Accept: application/json
 
 {
+  "idKoperasi": "",
   "tanggalMulai": "2023-01-01",
   "tanggalSelesai": "2023-12-31",
   "kuantitas": 12000,
@@ -162,12 +163,13 @@ Accept: application/json
 
 
 ###
-// Konfirmasi Kontrak
+// Konfirmasi Kontrak by Koperasi
 PUT http://localhost:9999/api/rantai-pasok/kontrak/:idKontrak
 Content-Type: application/json
 Accept: application/json
 
 {
+  "idPks": "",
   "status": 1,
   "pesan": "OK. Kami setuju dengan kontrak tersebut."
 }

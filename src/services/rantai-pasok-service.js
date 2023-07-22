@@ -10,9 +10,6 @@ const channelName = 'rantai-pasok-channel';
 const chaincodeName = 'rantai-pasok-chaincode';
 
 const createKontrak = async (user, request) => {
-  // for dev only
-  const idKoperasi = '59734224-6ada-4526-9606-61ca895017af';
-
   const payload = {
     id: uuidv4(),
     Nomor: transaction.generateTransactionCode('KONTRAK'),
@@ -20,7 +17,7 @@ const createKontrak = async (user, request) => {
     tanggalMulai: request.tanggalMulai,
     tanggalSelesai: request.tanggalSelesai,
     idPks: user.id,
-    idKoperasi: idKoperasi,
+    idKoperasi: request.idKoperasi,
     kuantitas: request.kuantitas,
     harga: request.harga,
   };
@@ -42,11 +39,8 @@ const createKontrak = async (user, request) => {
 };
 
 const confirmContractByKoperasi = async (user, request) => {
-  // for dev only
-  const idPks = 'f52b1818-a08f-463e-ad25-ea9ce953ecf3';
-
   const payload = {
-    idPks: idPks,
+    idPks: request.idPks,
     idKoperasi: user.id,
     idKontrak: request.idKontrak,
     status: request.status,
