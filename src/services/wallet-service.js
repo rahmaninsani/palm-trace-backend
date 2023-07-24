@@ -114,4 +114,5 @@ const enrollAllAdmin = async () => {
   });
 };
 
-export default { registerEnrollUser, enrollAllAdmin };
+const walletService = { registerEnrollUser, enrollAllAdmin };
+export default walletService;

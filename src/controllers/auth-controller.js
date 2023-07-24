@@ -53,4 +53,5 @@ const logout = async (req, res, next) => {
   }
 };
 
-export default { register, login, me, logout };
+const authController = { register, login, me, logout };
+export default authController;
