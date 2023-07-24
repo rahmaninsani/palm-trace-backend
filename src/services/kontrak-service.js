@@ -9,24 +9,26 @@ import ResponseError from '../errors/response-error.js';
 const channelName = 'rantai-pasok-channel';
 const chaincodeName = 'rantai-pasok-chaincode';
 
-const createKontrak = async (user, request) => {
+const create = async (user, request) => {
   const payload = {
     id: uuidv4(),
+    idPks: user.id,
+    idKoperasi: request.idKoperasi,
     Nomor: transaction.generateTransactionCode('KONTRAK'),
     tanggalPembuatan: time.getCurrentTime(),
     tanggalMulai: request.tanggalMulai,
     tanggalSelesai: request.tanggalSelesai,
-    idPks: user.id,
-    idKoperasi: request.idKoperasi,
     kuantitas: request.kuantitas,
     harga: request.harga,
+    createdAt: time.getCurrentTime(),
+    updatedAt: time.getCurrentTime(),
   };
   const connection = {
     userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'CreateKontrak',
+    chaincodeMethodName: 'KontrakCreate',
   };
   const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
   const result = submitTransaction.toString();
@@ -38,50 +40,27 @@ const createKontrak = async (user, request) => {
   return JSON.parse(result);
 };
 
-const confirmContract = async (user, request) => {
+const confirm = async (user, request) => {
   const payload = {
-    idPks: request.idPks,
+    id: request.id,
     idKoperasi: user.id,
-    idKontrak: request.idKontrak,
     status: request.status,
     pesan: request.pesan,
     tanggalRespons: time.getCurrentTime(),
+    updatedAt: time.getCurrentTime(),
   };
   const connection = {
     userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'ConfirmContract',
+    chaincodeMethodName: 'KontrakConfirm',
   };
   const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
   const result = submitTransaction.toString();
 
   if (result === '') {
     throw new ResponseError(404, 'Data kontrak tidak ditemukan');
-  }
-
-  return JSON.parse(result);
-};
-
-const get = async (user, idKebun) => {
-  const payload = {
-    idPetani: user.id,
-    idKebun,
-  };
-  const connection = {
-    userId: user.id,
-    role: user.role,
-    channelName,
-    chaincodeName,
-    chaincodeMethodName: 'GetkebunHistoryById',
-  };
-
-  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, JSON.stringify(payload));
-  const result = evaluateTransaction.toString();
-
-  if (result === '') {
-    throw new ResponseError(404, 'Data kebun tidak ditemukan');
   }
 
   return JSON.parse(result);
@@ -94,7 +73,7 @@ const getAllByIdPks = async (user) => {
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'GetAllKontrakByIdPks',
+    chaincodeMethodName: 'KontrakGetAllByIdPks',
   };
 
   const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idPks);
@@ -106,14 +85,14 @@ const getAllByIdPks = async (user) => {
   return JSON.parse(result);
 };
 
-const getAllByIdKoperasi = async (user, request) => {
+const getAllByIdKoperasi = async (user) => {
   const idKoperasi = user.id;
   const connection = {
     userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'GetAllKontrakByIdKoperasi',
+    chaincodeMethodName: 'KontrakGetAllByIdKoperasi',
   };
 
   const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idKoperasi);
@@ -125,6 +104,42 @@ const getAllByIdKoperasi = async (user, request) => {
   return JSON.parse(result);
 };
 
-const rantaiPasokService = { createKontrak, confirmContract, getAllByIdPks, getAllByIdKoperasi };
+const getAllForPetani = async (user) => {
+  const petani = await prismaClient.petani.findFirst({
+    where: {
+      idAkun: user.id,
+    },
+    select: {
+      idKoperasi: true,
+    },
+  });
 
-export default rantaiPasokService;
+  const koperasi = await prismaClient.koperasi.findFirst({
+    where: {
+      id: petani.idKoperasi,
+    },
+    select: {
+      idAkun: true,
+    },
+  });
+
+  const idKoperasi = koperasi.idAkun;
+  const connection = {
+    userId: user.id,
+    role: user.role,
+    channelName,
+    chaincodeName,
+    chaincodeMethodName: 'KontrakGetAllForPetani',
+  };
+
+  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idKoperasi);
+  const result = evaluateTransaction.toString();
+  if (result === '') {
+    throw new ResponseError(404, 'Data kontrak tidak ditemukan');
+  }
+
+  return JSON.parse(result);
+};
+
+const kontrakService = { create, confirm, getAllByIdPks, getAllByIdKoperasi, getAllForPetani };
+export default kontrakService;

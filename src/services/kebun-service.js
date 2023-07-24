@@ -17,6 +17,7 @@ const create = async (user, request) => {
     luas: request.luas,
     nomorRspo: request.nomorRspo,
     sertifikatRspo: request.sertifikatRspo,
+    createdAt: time.getCurrentTime(),
     updatedAt: time.getCurrentTime(),
   };
   const connection = {
@@ -24,7 +25,7 @@ const create = async (user, request) => {
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'CreateKebun',
+    chaincodeMethodName: 'KebunCreate',
   };
   const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
   const result = submitTransaction.toString();
@@ -53,11 +54,30 @@ const update = async (user, request) => {
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'UpdateKebun',
+    chaincodeMethodName: 'KebunUpdate',
   };
   const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
   const result = submitTransaction.toString();
 
+  if (result === '') {
+    throw new ResponseError(404, 'Data kebun tidak ditemukan');
+  }
+
+  return JSON.parse(result);
+};
+
+const getAll = async (user) => {
+  const idPetani = user.id;
+  const connection = {
+    userId: user.id,
+    role: user.role,
+    channelName,
+    chaincodeName,
+    chaincodeMethodName: 'KebunGetAllByIdPetani',
+  };
+
+  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idPetani);
+  const result = evaluateTransaction.toString();
   if (result === '') {
     throw new ResponseError(404, 'Data kebun tidak ditemukan');
   }
@@ -75,31 +95,12 @@ const get = async (user, idKebun) => {
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'GetKebunHistoryById',
+    chaincodeMethodName: 'KebunGetHistoryById',
   };
 
   const evaluateTransaction = await fabricClient.evaluateTransaction(connection, JSON.stringify(payload));
   const result = evaluateTransaction.toString();
 
-  if (result === '') {
-    throw new ResponseError(404, 'Data kebun tidak ditemukan');
-  }
-
-  return JSON.parse(result);
-};
-
-const getAll = async (user) => {
-  const idPetani = user.id;
-  const connection = {
-    userId: user.id,
-    role: user.role,
-    channelName,
-    chaincodeName,
-    chaincodeMethodName: 'GetAllKebunByIdPetani',
-  };
-
-  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idPetani);
-  const result = evaluateTransaction.toString();
   if (result === '') {
     throw new ResponseError(404, 'Data kebun tidak ditemukan');
   }

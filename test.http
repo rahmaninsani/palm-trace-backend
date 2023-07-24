@@ -5,11 +5,11 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "role": "pks",
-  "nama": "PKS Test",
-  "alamat": "Jl PKS Test",
+  "role": "dinas",
+  "nama": "Dinas Test",
+  "alamat": "Jl Dinas Test",
   "nomorTelepon": "081234567890",
-  "email": "pks.test@gmail.com",
+  "email": "dinas.test@gmail.com",
   "password": "test"
 }
 
@@ -35,7 +35,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "pks.test@gmail.com",
+  "email": "dinas.test@gmail.com",
   "password": "test"
 }
 
