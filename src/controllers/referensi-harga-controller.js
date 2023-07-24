@@ -53,9 +53,8 @@ const create = async (req, res, next) => {
 const update = async (req, res, next) => {
   try {
     const user = req.user;
-    const idRefererensiHarga = req.params.idRefererensiHarga;
     const request = req.body;
-    request.id = idRefererensiHarga;
+    request.id = req.params.idRefererensiHarga;
 
     const result = await referensiHargaService.update(user, request);
     res.status(200).json({
@@ -63,20 +62,6 @@ const update = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
-  }
-};
-
-const get = async (req, res, next) => {
-  try {
-    const user = req.user;
-    const idRefererensiHarga = req.params.idRefererensiHarga;
-
-    const result = await referensiHargaService.get(user, idRefererensiHarga);
-    res.status(200).json({
-      data: result,
-    });
-  } catch (e) {
-    next(e);
   }
 };
 
@@ -93,5 +78,19 @@ const getAll = async (req, res, next) => {
   }
 };
 
-const referensiHargaController = { createInit, create, update, get, getAll };
+const getHistoryById = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const idRefererensiHarga = req.params.idRefererensiHarga;
+
+    const result = await referensiHargaService.getHistoryById(user, idRefererensiHarga);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const referensiHargaController = { createInit, create, update, getAll, getHistoryById };
 export default referensiHargaController;

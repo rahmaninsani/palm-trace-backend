@@ -9,7 +9,7 @@ router.use(authMiddleware);
 
 router.post('/api/users/petani/kebun', kebunController.create);
 router.put('/api/users/petani/kebun/:idKebun', kebunController.update);
-router.get('/api/users/petani/kebun/:idKebun', kebunController.get);
-router.get('/api/users/petani/kebun', kebunController.getAll);
+router.get('/api/users/petani/kebun/:idKebun', kebunController.getHistoryById);
+router.get('/api/users/petani/kebun', kebunController.getAllByIdPetani);
 
 export default router;

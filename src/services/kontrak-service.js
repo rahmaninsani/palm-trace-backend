@@ -105,25 +105,21 @@ const getAllByIdKoperasi = async (user) => {
 };
 
 const getAllForPetani = async (user) => {
-  const petani = await prismaClient.petani.findFirst({
+  const petaniWithKoperasi = await prismaClient.petani.findFirst({
     where: {
       idAkun: user.id,
     },
-    select: {
-      idKoperasi: true,
+    include: {
+      koperasi: {
+        select: {
+          idAkun: true,
+        },
+      },
     },
   });
 
-  const koperasi = await prismaClient.koperasi.findFirst({
-    where: {
-      id: petani.idKoperasi,
-    },
-    select: {
-      idAkun: true,
-    },
-  });
+  const idKoperasi = petaniWithKoperasi.koperasi?.idAkun;
 
-  const idKoperasi = koperasi.idAkun;
   const connection = {
     userId: user.id,
     role: user.role,

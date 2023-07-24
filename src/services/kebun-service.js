@@ -66,7 +66,7 @@ const update = async (user, request) => {
   return JSON.parse(result);
 };
 
-const getAll = async (user) => {
+const getAllByIdPetani = async (user) => {
   const idPetani = user.id;
   const connection = {
     userId: user.id,
@@ -85,7 +85,7 @@ const getAll = async (user) => {
   return JSON.parse(result);
 };
 
-const get = async (user, idKebun) => {
+const getHistoryById = async (user, idKebun) => {
   const payload = {
     idPetani: user.id,
     idKebun,
@@ -108,6 +108,5 @@ const get = async (user, idKebun) => {
   return JSON.parse(result);
 };
 
-const kebunService = { create, update, get, getAll };
-
+const kebunService = { create, update, getAllByIdPetani, getHistoryById };
 export default kebunService;

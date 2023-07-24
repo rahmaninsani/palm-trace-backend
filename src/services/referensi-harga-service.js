@@ -14,13 +14,15 @@ const create = async (user, request) => {
     umurTanam: request.umurTanam,
     harga: request.harga,
     tanggalPembaruan: time.getCurrentTime(),
+    createdAt: time.getCurrentTime(),
+    updatedAt: time.getCurrentTime(),
   };
   const connection = {
     userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'Create',
+    chaincodeMethodName: 'ReferensiHargaCreate',
   };
   const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
   const result = submitTransaction.toString();
@@ -39,35 +41,17 @@ const update = async (user, request) => {
     umurTanam: request.umurTanam,
     harga: request.harga,
     tanggalPembaruan: time.getCurrentTime(),
+    updatedAt: time.getCurrentTime(),
   };
   const connection = {
     userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'Update',
+    chaincodeMethodName: 'ReferensiHargaUpdate',
   };
   const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
   const result = submitTransaction.toString();
-
-  if (result === '') {
-    throw new ResponseError(404, 'Data referensi harga tidak ditemukan');
-  }
-
-  return JSON.parse(result);
-};
-
-const get = async (user, idRefererensiHarga) => {
-  const connection = {
-    userId: user.id,
-    role: user.role,
-    channelName,
-    chaincodeName,
-    chaincodeMethodName: 'GetHistoryById',
-  };
-
-  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idRefererensiHarga);
-  const result = evaluateTransaction.toString();
 
   if (result === '') {
     throw new ResponseError(404, 'Data referensi harga tidak ditemukan');
@@ -82,7 +66,7 @@ const getAll = async (user) => {
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'GetAll',
+    chaincodeMethodName: 'ReferensiHargaGetAll',
   };
 
   const evaluateTransaction = await fabricClient.evaluateTransaction(connection);
@@ -98,6 +82,24 @@ const getAll = async (user) => {
   return sortedResult;
 };
 
-const referensiHargaService = { create, update, get, getAll };
+const getHistoryById = async (user, idRefererensiHarga) => {
+  const connection = {
+    userId: user.id,
+    role: user.role,
+    channelName,
+    chaincodeName,
+    chaincodeMethodName: 'ReferensiHargaGetHistoryById',
+  };
 
+  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idRefererensiHarga);
+  const result = evaluateTransaction.toString();
+
+  if (result === '') {
+    throw new ResponseError(404, 'Data referensi harga tidak ditemukan');
+  }
+
+  return JSON.parse(result);
+};
+
+const referensiHargaService = { create, update, getAll, getHistoryById };
 export default referensiHargaService;

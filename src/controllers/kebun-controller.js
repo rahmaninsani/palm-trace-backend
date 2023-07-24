@@ -29,12 +29,25 @@ const update = async (req, res, next) => {
   }
 };
 
-const get = async (req, res, next) => {
+const getAllByIdPetani = async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    const result = await kebunService.getAllByIdPetani(user);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getHistoryById = async (req, res, next) => {
   try {
     const user = req.user;
     const idKebun = req.params.idKebun;
 
-    const result = await kebunService.get(user, idKebun);
+    const result = await kebunService.getHistoryById(user, idKebun);
     res.status(200).json({
       data: result,
     });
@@ -43,18 +56,5 @@ const get = async (req, res, next) => {
   }
 };
 
-const getAll = async (req, res, next) => {
-  try {
-    const user = req.user;
-
-    const result = await kebunService.getAll(user);
-    res.status(200).json({
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const kebunController = { create, update, get, getAll };
+const kebunController = { create, update, getAllByIdPetani, getHistoryById };
 export default kebunController;

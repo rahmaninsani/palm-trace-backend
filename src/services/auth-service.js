@@ -166,4 +166,5 @@ const logout = async (session) => {
   });
 };
 
-export default { register, login, me, logout };
+const authService = { register, login, me, logout };
+export default authService;
