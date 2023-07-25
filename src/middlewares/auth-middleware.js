@@ -35,14 +35,29 @@ const authMiddleware = async (req, res, next) => {
       .end();
   }
 
+  if (akun.role === util.getAttributeName('petani').databaseRoleName) {
+    const petaniKoperasi = await prismaClient.petani.findFirst({
+      where: {
+        idAkun: akun.id,
+      },
+      include: {
+        koperasi: {
+          select: {
+            idAkun: true,
+          },
+        },
+      },
+    });
+
+    akun.idKoperasi = petaniKoperasi.koperasi?.idAkun;
+  }
+
   req.user = akun;
   next();
 };
 
 const authMiddlewareRole = (allowedRoles) => async (req, res, next) => {
   const currentUserRole = util.getAttributeName(req.user.role).databaseRoleName;
-
-  console.log('INIIIII =>>>', currentUserRole);
 
   if (!allowedRoles.includes(currentUserRole)) {
     return res

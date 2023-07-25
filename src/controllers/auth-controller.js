@@ -1,11 +1,13 @@
+import status from 'http-status';
 import authService from '../services/auth-service.js';
 
 const register = async (req, res, next) => {
   try {
     const { body: request } = req;
-    const result = await authService.register(request);
 
-    res.status(201).json({
+    const result = await authService.register(request);
+    res.status(status.CREATED).json({
+      status: `${status.CREATED} ${status[status.CREATED]}`,
       data: result,
     });
   } catch (error) {
@@ -16,9 +18,10 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { body: request, session } = req;
-    const result = await authService.login(session, request);
 
-    res.status(200).json({
+    const result = await authService.login(session, request);
+    res.status(status.OK).json({
+      status: `${status.OK} ${status[status.OK]}`,
       data: result,
     });
   } catch (error) {
@@ -31,8 +34,8 @@ const me = async (req, res, next) => {
     const { email } = req.user;
 
     const result = await authService.me(email);
-
-    res.status(200).json({
+    res.status(status.OK).json({
+      status: `${status.OK} ${status[status.OK]}`,
       data: result,
     });
   } catch (error) {
@@ -45,11 +48,11 @@ const logout = async (req, res, next) => {
     const { session } = req;
     await authService.logout(session);
 
-    res.status(200).json({
-      data: 'OK',
+    res.status(status.OK).json({
+      status: `${status.OK} ${status[status.OK]}`,
     });
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 };
 

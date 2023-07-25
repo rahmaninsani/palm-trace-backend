@@ -1,3 +1,4 @@
+import status from 'http-status';
 import kontrakService from '../services/kontrak-service.js';
 
 const create = async (req, res, next) => {
@@ -6,7 +7,8 @@ const create = async (req, res, next) => {
     const request = req.body;
 
     const result = await kontrakService.create(user, request);
-    res.status(201).json({
+    res.status(status.CREATED).json({
+      status: `${status.CREATED} ${status[status.CREATED]}`,
       data: result,
     });
   } catch (error) {
@@ -18,10 +20,11 @@ const confirm = async (req, res, next) => {
   try {
     const user = req.user;
     const request = req.body;
-    request.id = req.params.idKontrak;
+    request.idKontrak = req.params.idKontrak;
 
     const result = await kontrakService.confirm(user, request);
-    res.status(200).json({
+    res.status(status.OK).json({
+      status: `${status.OK} ${status[status.OK]}`,
       data: result,
     });
   } catch (error) {
@@ -29,12 +32,13 @@ const confirm = async (req, res, next) => {
   }
 };
 
-const getAllByIdPks = async (req, res, next) => {
+const findAll = async (req, res, next) => {
   try {
     const user = req.user;
 
-    const result = await kontrakService.getAllByIdPks(user);
-    res.status(200).json({
+    const result = await kontrakService.findAll(user);
+    res.status(status.OK).json({
+      status: `${status.OK} ${status[status.OK]}`,
       data: result,
     });
   } catch (error) {
@@ -42,12 +46,14 @@ const getAllByIdPks = async (req, res, next) => {
   }
 };
 
-const getAllByIdKoperasi = async (req, res, next) => {
+const findOne = async (req, res, next) => {
   try {
     const user = req.user;
+    const idKontrak = req.params.idKontrak;
 
-    const result = await kontrakService.getAllByIdKoperasi(user);
-    res.status(200).json({
+    const result = await kontrakService.findOne(user, idKontrak);
+    res.status(status.OK).json({
+      status: `${status.OK} ${status[status.OK]}`,
       data: result,
     });
   } catch (error) {
@@ -55,12 +61,14 @@ const getAllByIdKoperasi = async (req, res, next) => {
   }
 };
 
-const getAllForPetani = async (req, res, next) => {
+const findOneHistory = async (req, res, next) => {
   try {
     const user = req.user;
+    const idKontrak = req.params.idKontrak;
 
-    const result = await kontrakService.getAllForPetani(user);
-    res.status(200).json({
+    const result = await kontrakService.findOneHistory(user, idKontrak);
+    res.status(status.OK).json({
+      status: `${status.OK} ${status[status.OK]}`,
       data: result,
     });
   } catch (error) {
@@ -68,20 +76,5 @@ const getAllForPetani = async (req, res, next) => {
   }
 };
 
-const getOneById = async (req, res, next) => {
-  try {
-    const user = req.user;
-    const request = req.body;
-    request.id = req.params.idKontrak;
-
-    const result = await kontrakService.getOneById(user, request);
-    res.status(200).json({
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const kontrakController = { create, confirm, getAllByIdPks, getAllByIdKoperasi, getAllForPetani, getOneById };
+const kontrakController = { create, confirm, findAll, findOne, findOneHistory };
 export default kontrakController;

@@ -1,15 +1,26 @@
 import { v4 as uuidv4 } from 'uuid';
+import status from 'http-status';
 
 import prismaClient from '../applications/database.js';
 import fabricClient from '../applications/fabric.js';
 import time from '../utils/time.js';
 import transaction from '../utils/transaction-code.js';
 import ResponseError from '../errors/response-error.js';
+import util from '../utils/util.js';
+import statusRantaiPasok from '../constant/status-rantai-pasok.js';
 
 const channelName = 'rantai-pasok-channel';
 const chaincodeName = 'rantai-pasok-chaincode';
 
 const create = async (user, request) => {
+  const connection = {
+    userId: user.id,
+    role: user.role,
+    channelName,
+    chaincodeName,
+    chaincodeMethodName: 'KontrakCreate',
+  };
+
   const payload = {
     id: uuidv4(),
     idPks: user.id,
@@ -23,32 +34,24 @@ const create = async (user, request) => {
     createdAt: time.getCurrentTime(),
     updatedAt: time.getCurrentTime(),
   };
-  const connection = {
-    userId: user.id,
-    role: user.role,
-    channelName,
-    chaincodeName,
-    chaincodeMethodName: 'KontrakCreate',
-  };
-  const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
-  const result = submitTransaction.toString();
 
-  if (result === '') {
-    throw new ResponseError(404, 'Data kontrak tidak ditemukan');
+  const result = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
+  const resultJSON = JSON.parse(result.toString());
+
+  if (resultJSON.status !== status.CREATED) {
+    throw new ResponseError(resultJSON.status, resultJSON.message);
   }
 
-  return JSON.parse(result);
+  return resultJSON.data;
 };
 
 const confirm = async (user, request) => {
-  const payload = {
-    id: request.id,
-    idKoperasi: user.id,
-    status: request.status,
-    pesan: request.pesan,
-    tanggalRespons: time.getCurrentTime(),
-    updatedAt: time.getCurrentTime(),
-  };
+  const kontrakPrev = await findOne(user, request.idKontrak);
+
+  if (user.id !== kontrakPrev.idKoperasi) {
+    throw new ResponseError(status.FORBIDDEN, 'Koperasi Anda bukan mitra pada kontrak ini');
+  }
+
   const connection = {
     userId: user.id,
     role: user.role,
@@ -56,105 +59,123 @@ const confirm = async (user, request) => {
     chaincodeName,
     chaincodeMethodName: 'KontrakConfirm',
   };
-  const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
-  const result = submitTransaction.toString();
 
-  if (result === '') {
-    throw new ResponseError(404, 'Data kontrak tidak ditemukan');
+  const payload = {
+    id: request.idKontrak,
+    status: request.status,
+    pesan: request.pesan,
+    tanggalRespons: time.getCurrentTime(),
+    updatedAt: time.getCurrentTime(),
+  };
+
+  const result = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
+  const resultJSON = JSON.parse(result.toString());
+
+  if (resultJSON.status !== status.OK) {
+    throw new ResponseError(resultJSON.status, resultJSON.message);
   }
 
-  return JSON.parse(result);
+  return resultJSON.data;
 };
 
-const getAllByIdPks = async (user) => {
-  const idPks = user.id;
+const findAll = async (user) => {
   const connection = {
     userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'KontrakGetAllByIdPks',
+    chaincodeMethodName: 'KontrakFindAll',
   };
 
-  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idPks);
-  const result = evaluateTransaction.toString();
-  if (result === '') {
-    throw new ResponseError(404, 'Data kontrak tidak ditemukan');
+  const payload = {
+    idPks: '',
+    idKoperasi: '',
+    status: -1,
+  };
+
+  if (user.role === util.getAttributeName('pks').roleName) {
+    payload.idPks = user.id;
   }
 
-  return JSON.parse(result);
+  if (user.role === util.getAttributeName('koperasi').roleName) {
+    payload.idKoperasi = user.id;
+  }
+
+  if (user.role === util.getAttributeName('petani').roleName) {
+    payload.idKoperasi = user.idKoperasi;
+    payload.status = statusRantaiPasok.penawaranKontrak.menungguKonfirmasi.number;
+  }
+
+  const result = await fabricClient.evaluateTransaction(connection, JSON.stringify(payload));
+  const resultJSON = JSON.parse(result.toString());
+
+  if (resultJSON.status !== status.OK) {
+    throw new ResponseError(resultJSON.status, resultJSON.message);
+  }
+
+  return resultJSON.data;
 };
 
-const getAllByIdKoperasi = async (user) => {
-  const idKoperasi = user.id;
+const findOne = async (user, idKontrak) => {
   const connection = {
     userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'KontrakGetAllByIdKoperasi',
+    chaincodeMethodName: 'KontrakFindOne',
   };
 
-  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idKoperasi);
-  const result = evaluateTransaction.toString();
-  if (result === '') {
-    throw new ResponseError(404, 'Data kontrak tidak ditemukan');
+  const result = await fabricClient.evaluateTransaction(connection, idKontrak);
+  const resultJSON = JSON.parse(result.toString());
+
+  if (resultJSON.status !== status.OK) {
+    throw new ResponseError(resultJSON.status, resultJSON.message);
   }
 
-  return JSON.parse(result);
+  const { data } = resultJSON;
+
+  if (data.idPks !== user.id && data.idKoperasi !== user.id && data.idKoperasi !== user.idKoperasi) {
+    throw new ResponseError(status.FORBIDDEN, 'Anda tidak memiliki akses ke data ini');
+  }
+
+  if (user.role === util.getAttributeName('petani').databaseRoleName) {
+    if (data.status !== statusRantaiPasok.penawaranKontrak.disetujui.string) {
+      throw new ResponseError(status.FORBIDDEN, 'Anda tidak memiliki akses ke data ini');
+    }
+  }
+
+  return data;
 };
 
-const getAllForPetani = async (user) => {
-  const petaniWithKoperasi = await prismaClient.petani.findFirst({
-    where: {
-      idAkun: user.id,
-    },
-    include: {
-      koperasi: {
-        select: {
-          idAkun: true,
-        },
-      },
-    },
-  });
-
-  const idKoperasi = petaniWithKoperasi.koperasi?.idAkun;
-
+const findOneHistory = async (user, idKontrak) => {
   const connection = {
     userId: user.id,
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'KontrakGetAllForPetani',
+    chaincodeMethodName: 'KontrakFindOneHistory',
   };
 
-  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idKoperasi);
-  const result = evaluateTransaction.toString();
-  if (result === '') {
-    throw new ResponseError(404, 'Data kontrak tidak ditemukan');
+  const result = await fabricClient.evaluateTransaction(connection, idKontrak);
+  const resultJSON = JSON.parse(result.toString());
+
+  if (resultJSON.status !== status.OK) {
+    throw new ResponseError(resultJSON.status, resultJSON.message);
   }
 
-  return JSON.parse(result);
-};
-
-const findOne = async (user, request) => {
-  const idKontrak = request.idKontrak;
-  const connection = {
-    userId: user.id,
-    role: user.role,
-    channelName,
-    chaincodeName,
-    chaincodeMethodName: 'GetKontrakDetailById',
-  };
-
-  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idKontrak);
-  const result = evaluateTransaction.toString();
-  if (result === '') {
-    throw new ResponseError(404, 'Data kontrak tidak ditemukan');
+  const { data } = resultJSON;
+  if (data[0].idPks !== user.id && data[0].idKoperasi !== user.id && data[0].idKoperasi !== user.idKoperasi) {
+    throw new ResponseError(status.FORBIDDEN, 'Anda tidak memiliki akses ke data ini');
   }
 
-  return JSON.parse(result);
+  if (user.role === util.getAttributeName('petani').databaseRoleName) {
+    if (data[0].status !== statusRantaiPasok.penawaranKontrak.disetujui.string) {
+      throw new ResponseError(status.FORBIDDEN, 'Anda tidak memiliki akses ke data ini');
+    }
+  }
+
+  return data;
 };
 
-const kontrakService = { create, confirm, findOne };
+const kontrakService = { create, confirm, findAll, findOne, findOneHistory };
 export default kontrakService;
