@@ -52,6 +52,10 @@ const confirm = async (user, request) => {
     throw new ResponseError(status.FORBIDDEN, 'Koperasi Anda bukan mitra pada kontrak ini');
   }
 
+  if (kontrakPrev.status === statusRantaiPasok.penawaranKontrak.disetujui.string) {
+    throw new ResponseError(status.BAD_REQUEST, 'Kontrak sudah disetujui');
+  }
+
   const connection = {
     userId: user.id,
     role: user.role,
@@ -93,18 +97,20 @@ const findAll = async (user) => {
     status: -1,
   };
 
-  if (user.role === util.getAttributeName('pks').roleName) {
+  if (user.role === util.getAttributeName('pks').databaseRoleName) {
     payload.idPks = user.id;
   }
 
-  if (user.role === util.getAttributeName('koperasi').roleName) {
+  if (user.role === util.getAttributeName('koperasi').databaseRoleName) {
     payload.idKoperasi = user.id;
   }
 
-  if (user.role === util.getAttributeName('petani').roleName) {
+  if (user.role === util.getAttributeName('petani').databaseRoleName) {
     payload.idKoperasi = user.idKoperasi;
-    payload.status = statusRantaiPasok.penawaranKontrak.menungguKonfirmasi.number;
+    payload.status = statusRantaiPasok.penawaranKontrak.disetujui.number;
   }
+
+  console.log('INIIIIII', payload);
 
   const result = await fabricClient.evaluateTransaction(connection, JSON.stringify(payload));
   const resultJSON = JSON.parse(result.toString());
@@ -140,7 +146,7 @@ const findOne = async (user, idKontrak) => {
 
   if (user.role === util.getAttributeName('petani').databaseRoleName) {
     if (data.status !== statusRantaiPasok.penawaranKontrak.disetujui.string) {
-      throw new ResponseError(status.FORBIDDEN, 'Anda tidak memiliki akses ke data ini');
+      throw new ResponseError(status.NOT_FOUND);
     }
   }
 
@@ -170,7 +176,7 @@ const findOneHistory = async (user, idKontrak) => {
 
   if (user.role === util.getAttributeName('petani').databaseRoleName) {
     if (data[0].status !== statusRantaiPasok.penawaranKontrak.disetujui.string) {
-      throw new ResponseError(status.FORBIDDEN, 'Anda tidak memiliki akses ke data ini');
+      throw new ResponseError(status.NOT_FOUND);
     }
   }
 
