@@ -2,7 +2,6 @@ import express from 'express';
 
 import util from '../utils/util.js';
 import kontrakController from '../controllers/kontrak-controller.js';
-import deliveryOrderController from '../controllers/delivery-order-controller.js';
 import { authMiddleware, authMiddlewareRole } from '../middlewares/auth-middleware.js';
 
 const pksRole = util.getAttributeName('pks').databaseRoleName;
@@ -22,10 +21,5 @@ router.get(
   kontrakController.findOneHistory
 );
 router.get('/api/kontrak', authMiddlewareRole([pksRole, koperasiRole, petaniRole]), kontrakController.findAll);
-
-// router.post('/api/kontrak/:idKontrak/delivery-order', deliveryOrderController.create);
-// router.put('/api/kontrak/:idKontrak/delivery-order/:idDeliveryOrder', deliveryOrderController.confirm);
-// router.get('/api/kontrak/:idKontrak/delivery-order', deliveryOrderController.findAll);
-// router.get('/api/kontrak/:idKontrak/delivery-order/:idDeliveryOrder', deliveryOrderController.findOne);
 
 export default router;

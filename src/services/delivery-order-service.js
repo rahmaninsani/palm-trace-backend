@@ -1,12 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
+import status from 'http-status';
 
 import prismaClient from '../applications/database.js';
 import fabricClient from '../applications/fabric.js';
 import time from '../utils/time.js';
 import transaction from '../utils/transaction-code.js';
 import ResponseError from '../errors/response-error.js';
-
 import util from '../utils/util.js';
+import statusRantaiPasok from '../constant/status-rantai-pasok.js';
 
 import kontrakService from './kontrak-service.js';
 
@@ -14,25 +15,23 @@ const channelName = 'rantai-pasok-channel';
 const chaincodeName = 'rantai-pasok-chaincode';
 
 const create = async (user, request) => {
-  const kontrak = await kontrakService.getOneById(user, request);
+  const kontrak = await kontrakService.findOne(user, request);
 
   if (kontrak.idPks !== user.id) {
-    throw new ResponseError(401, 'Unauthorized');
+    throw new ResponseError(status.FORBIDDEN, 'Pabrik Kelapa Sawit Anda bukan mitra pada kontrak ini');
   }
 
   if (kontrak.status !== 'Disetujui') {
-    throw new ResponseError(400, 'Kontrak belum disetujui');
+    throw new ResponseError(status.BAD_REQUEST, 'Kontrak belum disetujui');
   }
 
   if (kontrak.kuantitasTersisa < request.kuantitas) {
-    throw new ResponseError(400, 'Kuantitas delivery order melebihi kuantitas kontrak');
+    throw new ResponseError(status.BAD_REQUEST, 'Kuantitas delivery order melebihi kuantitas kontrak');
   }
 
   if (kontrak.tanggalSelesai < time.getCurrentTime()) {
-    throw new ResponseError(400, 'Kontrak sudah berakhir');
+    throw new ResponseError(status.BAD_REQUEST, 'Kontrak sudah berakhir');
   }
-
-  // Cek apakah delivery order sudah pernah dibuat
 
   const payload = {
     id: uuidv4(),
@@ -46,6 +45,7 @@ const create = async (user, request) => {
     createdAt: time.getCurrentTime(),
     updatedAt: time.getCurrentTime(),
   };
+
   const connection = {
     userId: user.id,
     role: user.role,
@@ -53,13 +53,23 @@ const create = async (user, request) => {
     chaincodeName,
     chaincodeMethodName: 'DeliveryOrderCreate',
   };
-  const result = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
 
-  return result;
+  const result = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
+  const resultJSON = JSON.parse(result.toString());
+
+  if (resultJSON.status !== status.CREATED) {
+    throw new ResponseError(resultJSON.status, resultJSON.message);
+  }
+
+  return resultJSON.data;
 };
 
 const confirm = async (user, request) => {
-  // Cek apakah delivery order sudah pernah dibuat/ada
+  const deliveryOrderPrev = await findOne(user, request);
+
+  if (deliveryOrderPrev.status === statusRantaiPasok.penawaranDeliverOrder.disetujui.string) {
+    throw new ResponseError(status.BAD_REQUEST, 'Delivery order sudah disetujui');
+  }
 
   const connection = {
     userId: user.id,
@@ -71,7 +81,6 @@ const confirm = async (user, request) => {
 
   const payload = {
     id: request.idDeliveryOrder,
-    idKoperasi: user.id,
     status: request.status,
     pesan: request.pesan,
     tanggalRespons: time.getCurrentTime(),
@@ -79,11 +88,18 @@ const confirm = async (user, request) => {
   };
 
   const result = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
+  const resultJSON = JSON.parse(result.toString());
 
-  return result;
+  if (resultJSON.status !== status.OK) {
+    throw new ResponseError(resultJSON.status, resultJSON.message);
+  }
+
+  return resultJSON.data;
 };
 
 const findAll = async (user, request) => {
+  await kontrakService.findOne(user, request);
+
   const connection = {
     userId: user.id,
     role: user.role,
@@ -97,17 +113,23 @@ const findAll = async (user, request) => {
     status: -1,
   };
 
-  const petaniRole = util.getAttributeName('petani').roleName;
-  if (user.role == petaniRole) {
-    payload.status = 1;
+  if (user.role === util.getAttributeName('petani').databaseRoleName) {
+    payload.status = statusRantaiPasok.penawaranDeliverOrder.disetujui.number;
   }
 
   const result = await fabricClient.evaluateTransaction(connection, JSON.stringify(payload));
+  const resultJSON = JSON.parse(result.toString());
 
-  return JSON.parse(result.toString());
+  if (resultJSON.status !== status.OK) {
+    throw new ResponseError(resultJSON.status, resultJSON.message);
+  }
+
+  return resultJSON.data;
 };
 
 const findOne = async (user, request) => {
+  await kontrakService.findOne(user, request);
+
   const connection = {
     userId: user.id,
     role: user.role,
@@ -116,11 +138,50 @@ const findOne = async (user, request) => {
     chaincodeMethodName: 'DeliveryOrderFindOne',
   };
 
-  const idDeliveryOrder = request.idDeliveryOrder;
+  const result = await fabricClient.evaluateTransaction(connection, request.idDeliveryOrder);
+  const resultJSON = JSON.parse(result.toString());
 
-  const result = await fabricClient.evaluateTransaction(connection, idDeliveryOrder);
-  return result;
+  if (resultJSON.status !== status.OK) {
+    throw new ResponseError(resultJSON.status, resultJSON.message);
+  }
+
+  const { data } = resultJSON;
+  if (user.role === util.getAttributeName('petani').databaseRoleName) {
+    if (data.status !== statusRantaiPasok.penawaranDeliverOrder.disetujui.string) {
+      throw new ResponseError(status.NOT_FOUND);
+    }
+  }
+
+  return data;
 };
 
-const deliveryOrderService = { create, confirm, findAll, findOne };
+const findOneHistory = async (user, request) => {
+  await kontrakService.findOne(user, request);
+
+  const connection = {
+    userId: user.id,
+    role: user.role,
+    channelName,
+    chaincodeName,
+    chaincodeMethodName: 'DeliveryOrderFindOneHistory',
+  };
+
+  const result = await fabricClient.evaluateTransaction(connection, request.idDeliveryOrder);
+  const resultJSON = JSON.parse(result.toString());
+
+  if (resultJSON.status !== status.OK) {
+    throw new ResponseError(resultJSON.status, resultJSON.message);
+  }
+
+  const { data } = resultJSON;
+  if (user.role === util.getAttributeName('petani').databaseRoleName) {
+    if (data[0].status !== statusRantaiPasok.penawaranDeliverOrder.disetujui.string) {
+      throw new ResponseError(status.NOT_FOUND);
+    }
+  }
+
+  return data;
+};
+
+const deliveryOrderService = { create, confirm, findAll, findOne, findOneHistory };
 export default deliveryOrderService;

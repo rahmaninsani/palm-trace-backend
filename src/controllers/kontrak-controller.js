@@ -49,9 +49,10 @@ const findAll = async (req, res, next) => {
 const findOne = async (req, res, next) => {
   try {
     const user = req.user;
-    const idKontrak = req.params.idKontrak;
+    const request = req.body;
+    request.idKontrak = req.params.idKontrak;
 
-    const result = await kontrakService.findOne(user, idKontrak);
+    const result = await kontrakService.findOne(user, request);
     res.status(status.OK).json({
       status: `${status.OK} ${status[status.OK]}`,
       data: result,
@@ -64,9 +65,10 @@ const findOne = async (req, res, next) => {
 const findOneHistory = async (req, res, next) => {
   try {
     const user = req.user;
-    const idKontrak = req.params.idKontrak;
+    const request = req.body;
+    request.idKontrak = req.params.idKontrak;
 
-    const result = await kontrakService.findOneHistory(user, idKontrak);
+    const result = await kontrakService.findOneHistory(user, request);
     res.status(status.OK).json({
       status: `${status.OK} ${status[status.OK]}`,
       data: result,

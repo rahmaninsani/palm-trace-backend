@@ -13,6 +13,7 @@ import authRoute from '../routes/auth-route.js';
 import userRoute from '../routes/user-route.js';
 import referensiHargaRoute from '../routes/referensi-harga-route.js';
 import kontrakRoute from '../routes/kontrak-route.js';
+import deliveryOrderRoute from '../routes/delivery-order-route.js';
 
 dotenv.config();
 
@@ -51,6 +52,7 @@ web.use(authRoute);
 web.use(userRoute);
 web.use(referensiHargaRoute);
 web.use(kontrakRoute);
+web.use(deliveryOrderRoute);
 
 web.use(errorMiddleware);
 

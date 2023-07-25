@@ -110,8 +110,6 @@ const findAll = async (user) => {
     payload.status = statusRantaiPasok.penawaranKontrak.disetujui.number;
   }
 
-  console.log('INIIIIII', payload);
-
   const result = await fabricClient.evaluateTransaction(connection, JSON.stringify(payload));
   const resultJSON = JSON.parse(result.toString());
 
@@ -122,7 +120,7 @@ const findAll = async (user) => {
   return resultJSON.data;
 };
 
-const findOne = async (user, idKontrak) => {
+const findOne = async (user, request) => {
   const connection = {
     userId: user.id,
     role: user.role,
@@ -131,7 +129,7 @@ const findOne = async (user, idKontrak) => {
     chaincodeMethodName: 'KontrakFindOne',
   };
 
-  const result = await fabricClient.evaluateTransaction(connection, idKontrak);
+  const result = await fabricClient.evaluateTransaction(connection, request.idKontrak);
   const resultJSON = JSON.parse(result.toString());
 
   if (resultJSON.status !== status.OK) {
@@ -139,7 +137,6 @@ const findOne = async (user, idKontrak) => {
   }
 
   const { data } = resultJSON;
-
   if (data.idPks !== user.id && data.idKoperasi !== user.id && data.idKoperasi !== user.idKoperasi) {
     throw new ResponseError(status.FORBIDDEN, 'Anda tidak memiliki akses ke data ini');
   }
@@ -153,7 +150,7 @@ const findOne = async (user, idKontrak) => {
   return data;
 };
 
-const findOneHistory = async (user, idKontrak) => {
+const findOneHistory = async (user, request) => {
   const connection = {
     userId: user.id,
     role: user.role,
@@ -162,7 +159,7 @@ const findOneHistory = async (user, idKontrak) => {
     chaincodeMethodName: 'KontrakFindOneHistory',
   };
 
-  const result = await fabricClient.evaluateTransaction(connection, idKontrak);
+  const result = await fabricClient.evaluateTransaction(connection, request.idKontrak);
   const resultJSON = JSON.parse(result.toString());
 
   if (resultJSON.status !== status.OK) {
