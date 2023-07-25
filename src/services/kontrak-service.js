@@ -137,5 +137,24 @@ const getAllForPetani = async (user) => {
   return JSON.parse(result);
 };
 
-const kontrakService = { create, confirm, getAllByIdPks, getAllByIdKoperasi, getAllForPetani };
+const findOne = async (user, request) => {
+  const idKontrak = request.idKontrak;
+  const connection = {
+    userId: user.id,
+    role: user.role,
+    channelName,
+    chaincodeName,
+    chaincodeMethodName: 'GetKontrakDetailById',
+  };
+
+  const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idKontrak);
+  const result = evaluateTransaction.toString();
+  if (result === '') {
+    throw new ResponseError(404, 'Data kontrak tidak ditemukan');
+  }
+
+  return JSON.parse(result);
+};
+
+const kontrakService = { create, confirm, findOne };
 export default kontrakService;

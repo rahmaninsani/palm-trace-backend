@@ -75,4 +75,5 @@ const getOrganizationInfo = async (organizationName) => {
   };
 };
 
-export default { readFile, getAttributeName, getOrganizationInfo };
+const util = { readFile, getAttributeName, getOrganizationInfo };
+export default util;

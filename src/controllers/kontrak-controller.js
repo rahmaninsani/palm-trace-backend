@@ -68,5 +68,20 @@ const getAllForPetani = async (req, res, next) => {
   }
 };
 
-const kontrakController = { create, confirm, getAllByIdPks, getAllByIdKoperasi, getAllForPetani };
+const getOneById = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const request = req.body;
+    request.id = req.params.idKontrak;
+
+    const result = await kontrakService.getOneById(user, request);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const kontrakController = { create, confirm, getAllByIdPks, getAllByIdKoperasi, getAllForPetani, getOneById };
 export default kontrakController;

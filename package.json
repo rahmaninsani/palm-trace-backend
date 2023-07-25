@@ -30,6 +30,7 @@
     "express-session": "^1.17.3",
     "fabric-ca-client": "^2.2.18",
     "fabric-network": "^2.2.18",
+    "http-status": "^1.6.2",
     "joi": "^17.9.2",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
