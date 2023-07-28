@@ -46,7 +46,7 @@ const create = async (user, request) => {
 };
 
 const confirm = async (user, request) => {
-  const kontrakPrev = await findOne(user, request.idKontrak);
+  const kontrakPrev = await findOne(user, request);
 
   if (user.id !== kontrakPrev.idKoperasi) {
     throw new ResponseError(status.FORBIDDEN, 'Koperasi Anda bukan mitra pada kontrak ini');

@@ -17,10 +17,6 @@ const chaincodeName = 'rantai-pasok-chaincode';
 const create = async (user, request) => {
   const kontrak = await kontrakService.findOne(user, request);
 
-  if (kontrak.idPks !== user.id) {
-    throw new ResponseError(status.FORBIDDEN, 'Pabrik Kelapa Sawit Anda bukan mitra pada kontrak ini');
-  }
-
   if (kontrak.status !== 'Disetujui') {
     throw new ResponseError(status.BAD_REQUEST, 'Kontrak belum disetujui');
   }

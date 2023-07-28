@@ -94,7 +94,7 @@ const findAll = async (user) => {
     throw new ResponseError(resultJSON.status, resultJSON.message);
   }
 
-  return resultJSON.data;
+  return resultJSON.data.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 };
 
 const findOne = async (user, idKebun) => {
