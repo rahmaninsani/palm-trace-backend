@@ -9,6 +9,7 @@ import ResponseError from '../errors/response-error.js';
 import util from '../utils/util.js';
 import statusRantaiPasok from '../constant/status-rantai-pasok.js';
 
+import kontrakService from './kontrak-service.js';
 import deliveryOrderService from './delivery-order-service.js';
 import transaksiItemService from './transaksi-item-service.js';
 
@@ -16,21 +17,21 @@ const channelName = 'rantai-pasok-channel';
 const chaincodeName = 'rantai-pasok-chaincode';
 
 const create = async (user, request) => {
-  // const deliveryOrder = await deliveryOrderService.findOne(user, request);
+  const deliveryOrder = await deliveryOrderService.findOne(user, request);
 
-  // if (deliveryOrder.status !== 'Disetujui') {
-  //   throw new ResponseError(status.BAD_REQUEST, 'Delivery Order belum disetujui');
-  // }
+  if (deliveryOrder.status !== 'Disetujui') {
+    throw new ResponseError(status.BAD_REQUEST, 'Delivery Order belum disetujui');
+  }
 
-  // if (deliveryOrder.kuantitas < request.kuantitas) {
-  //   throw new ResponseError(status.BAD_REQUEST, 'Kuantitas transaksi melebihi kuantitas delivery order');
-  // }
+  if (deliveryOrder.kuantitas < request.kuantitas) {
+    throw new ResponseError(status.BAD_REQUEST, 'Kuantitas transaksi melebihi kuantitas delivery order');
+  }
 
   const payload = {
     id: uuidv4(),
     idDeliveryOrder: request.idDeliveryOrder,
     idPetani: user.id,
-    Nomor: transaction.generateTransactionCode('TRX'),
+    nomor: transaction.generateTransactionCode('TRX'),
     tanggalPembuatan: time.getCurrentTime(),
     createdAt: time.getCurrentTime(),
     updatedAt: time.getCurrentTime(),
@@ -118,10 +119,56 @@ const confirm = async (user, request) => {
     throw new ResponseError(transaksiJSON.status, transaksiJSON.message);
   }
 
-  const transaksiItems = await transaksiItemService.findAll(user, request);
+  const transaksiItems = await findOne(user, request);
   transaksiJSON.data.transaksiItems = transaksiItems;
 
-  return resultJSON.data;
+  if (
+    user.role === util.getAttributeName('pks').databaseRoleName &&
+    transaksiJSON.statusKoperasi === statusRantaiPasok.penawaranTransaksi.disetujui.string
+  ) {
+    const totalKuantitas = transaksiItems.reduce((total, item) => total + item.kuantitas, 0);
+    const updatedAt = time.getCurrentTime();
+    const updateKuantitasKontrakRequest = {
+      idKontrak: request.idKontrak,
+      kuantitasTerpenuhi: totalKuantitas, // kuantitas ditambah di chaincode
+      updatedAt,
+    };
+    const updateKuantitasDeliveryOrderRequest = {
+      idDeliveryOrder: request.idKontrak,
+      kuantitasTerpenuhi: totalKuantitas, // kuantitas ditambah di chaincode
+      updatedAt,
+    };
+
+    await kontrakService.updateKuantitas(user, updateKuantitasKontrakRequest);
+    await deliveryOrderService.updateKuantitas(user, updateKuantitasDeliveryOrderRequest);
+  }
+
+  return transaksiJSON.data;
+};
+
+const updateStatus = async (user, request) => {
+  const connection = {
+    userId: user.id,
+    role: user.role,
+    channelName,
+    chaincodeName,
+    chaincodeMethodName: 'TransaksiUpdateStatus',
+  };
+
+  const payload = {
+    id: request.idTransaksi,
+    status: request.status,
+    updatedAt: time.getCurrentTime(),
+  };
+
+  const transaksi = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
+  const transaksiJSON = JSON.parse(transaksi.toString());
+
+  if (transaksiJSON.status !== status.CREATED) {
+    throw new ResponseError(transaksiJSON.status, transaksiJSON.message);
+  }
+
+  return transaksiJSON.data;
 };
 
 const findAll = async (user, request) => {
@@ -182,5 +229,5 @@ const findOne = async (user, request) => {
   return data;
 };
 
-const transaksiService = { create, confirm, findAll, findOne };
+const transaksiService = { create, confirm, updateStatus, findAll, findOne };
 export default transaksiService;

@@ -32,7 +32,7 @@ const create = async (user, request) => {
   const payload = {
     id: uuidv4(),
     idKontrak: request.idKontrak,
-    Nomor: transaction.generateTransactionCode('DO'),
+    nomor: transaction.generateTransactionCode('DO'),
     tanggalPembuatan: time.getCurrentTime(),
     periode: request.periode,
     kuantitas: request.kuantitas,
@@ -80,6 +80,31 @@ const confirm = async (user, request) => {
     status: request.status,
     pesan: request.pesan,
     tanggalRespons: time.getCurrentTime(),
+    updatedAt: time.getCurrentTime(),
+  };
+
+  const result = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
+  const resultJSON = JSON.parse(result.toString());
+
+  if (resultJSON.status !== status.OK) {
+    throw new ResponseError(resultJSON.status, resultJSON.message);
+  }
+
+  return resultJSON.data;
+};
+
+const updateKuantitas = async (user, request) => {
+  const connection = {
+    userId: user.id,
+    role: user.role,
+    channelName,
+    chaincodeName,
+    chaincodeMethodName: 'DeliveryOrderUpdateKuantitas',
+  };
+
+  const payload = {
+    id: request.idDeliveryOrder,
+    kuantitasTerpenuhi: request.kuantitasTerpenuhi,
     updatedAt: time.getCurrentTime(),
   };
 
@@ -179,5 +204,5 @@ const findOneHistory = async (user, request) => {
   return data;
 };
 
-const deliveryOrderService = { create, confirm, findAll, findOne, findOneHistory };
+const deliveryOrderService = { create, confirm, updateKuantitas, findAll, findOne, findOneHistory };
 export default deliveryOrderService;

@@ -25,7 +25,7 @@ const create = async (user, request) => {
     id: uuidv4(),
     idPks: user.id,
     idKoperasi: request.idKoperasi,
-    Nomor: transaction.generateTransactionCode('KONTRAK'),
+    nomor: transaction.generateTransactionCode('KONTRAK'),
     tanggalPembuatan: time.getCurrentTime(),
     tanggalMulai: request.tanggalMulai,
     tanggalSelesai: request.tanggalSelesai,
@@ -69,6 +69,31 @@ const confirm = async (user, request) => {
     status: request.status,
     pesan: request.pesan,
     tanggalRespons: time.getCurrentTime(),
+    updatedAt: time.getCurrentTime(),
+  };
+
+  const result = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
+  const resultJSON = JSON.parse(result.toString());
+
+  if (resultJSON.status !== status.OK) {
+    throw new ResponseError(resultJSON.status, resultJSON.message);
+  }
+
+  return resultJSON.data;
+};
+
+const updateKuantitas = async (user, request) => {
+  const connection = {
+    userId: user.id,
+    role: user.role,
+    channelName,
+    chaincodeName,
+    chaincodeMethodName: 'KontrakUpdateKuantitas',
+  };
+
+  const payload = {
+    id: request.idKontrak,
+    kuantitasTerpenuhi: request.kuantitasTerpenuhi,
     updatedAt: time.getCurrentTime(),
   };
 
@@ -180,5 +205,5 @@ const findOneHistory = async (user, request) => {
   return data;
 };
 
-const kontrakService = { create, confirm, findAll, findOne, findOneHistory };
+const kontrakService = { create, confirm, updateKuantitas, findAll, findOne, findOneHistory };
 export default kontrakService;
