@@ -15,6 +15,9 @@ import referensiHargaRoute from '../routes/referensi-harga-route.js';
 import kontrakRoute from '../routes/kontrak-route.js';
 import deliveryOrderRoute from '../routes/delivery-order-route.js';
 import transaksiRoute from '../routes/transaksi-route.js';
+import pengirimanRoute from '../routes/pengiriman-route.js';
+import penerimaanRoute from '../routes/penerimaan-route.js';
+import pembayaranRoute from '../routes/pembayaran-route.js';
 
 dotenv.config();
 
@@ -55,6 +58,9 @@ web.use(referensiHargaRoute);
 web.use(kontrakRoute);
 web.use(deliveryOrderRoute);
 web.use(transaksiRoute);
+web.use(pengirimanRoute);
+web.use(penerimaanRoute);
+web.use(pembayaranRoute);
 
 web.use(errorMiddleware);
 

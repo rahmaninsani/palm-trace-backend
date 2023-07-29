@@ -127,16 +127,13 @@ const confirm = async (user, request) => {
     transaksiJSON.statusKoperasi === statusRantaiPasok.penawaranTransaksi.disetujui.string
   ) {
     const totalKuantitas = transaksiItems.reduce((total, item) => total + item.kuantitas, 0);
-    const updatedAt = time.getCurrentTime();
     const updateKuantitasKontrakRequest = {
       idKontrak: request.idKontrak,
       kuantitasTerpenuhi: totalKuantitas, // kuantitas ditambah di chaincode
-      updatedAt,
     };
     const updateKuantitasDeliveryOrderRequest = {
-      idDeliveryOrder: request.idKontrak,
+      idDeliveryOrder: request.idDeliveryOrder,
       kuantitasTerpenuhi: totalKuantitas, // kuantitas ditambah di chaincode
-      updatedAt,
     };
 
     await kontrakService.updateKuantitas(user, updateKuantitasKontrakRequest);

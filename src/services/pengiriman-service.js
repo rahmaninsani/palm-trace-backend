@@ -72,7 +72,7 @@ const findAll = async (user, request) => {
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'PengirimanFindAllRequest',
+    chaincodeMethodName: 'PengirimanFindAll',
   };
 
   const payload = {

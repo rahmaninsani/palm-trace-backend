@@ -22,7 +22,7 @@ const create = async (user, request) => {
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'ReferensiHargaCreate',
+    chaincodeMethodName: 'Create',
   };
   const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
   const result = submitTransaction.toString();
@@ -48,7 +48,7 @@ const update = async (user, request) => {
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'ReferensiHargaUpdate',
+    chaincodeMethodName: 'Update',
   };
   const submitTransaction = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
   const result = submitTransaction.toString();
@@ -66,7 +66,7 @@ const getAll = async (user) => {
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'ReferensiHargaGetAll',
+    chaincodeMethodName: 'GetAll',
   };
 
   const evaluateTransaction = await fabricClient.evaluateTransaction(connection);
@@ -88,7 +88,7 @@ const getHistoryById = async (user, idRefererensiHarga) => {
     role: user.role,
     channelName,
     chaincodeName,
-    chaincodeMethodName: 'ReferensiHargaGetHistoryById',
+    chaincodeMethodName: 'GetHistoryById',
   };
 
   const evaluateTransaction = await fabricClient.evaluateTransaction(connection, idRefererensiHarga);
