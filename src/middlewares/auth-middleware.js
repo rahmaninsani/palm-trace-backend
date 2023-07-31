@@ -71,4 +71,18 @@ const authMiddlewareRole = (allowedRoles) => async (req, res, next) => {
   next();
 };
 
-export { authMiddleware, authMiddlewareRole };
+const isAlreadyLoggedIn = (req, res, next) => {
+  if (req.session.userEmail) {
+    return res
+      .status(status.FORBIDDEN)
+      .json({
+        status: `${status.FORBIDDEN} ${status[status.FORBIDDEN]}`,
+        message: 'You are already logged in. Please logout first.',
+      })
+      .end();
+  }
+
+  next();
+};
+
+export { authMiddleware, authMiddlewareRole, isAlreadyLoggedIn };

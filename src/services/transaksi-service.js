@@ -12,6 +12,9 @@ import statusRantaiPasok from '../constant/status-rantai-pasok.js';
 import kontrakService from './kontrak-service.js';
 import deliveryOrderService from './delivery-order-service.js';
 import transaksiItemService from './transaksi-item-service.js';
+import pengirimanService from './pengiriman-service.js';
+import penerimaanService from './penerimaan-service.js';
+import pembayaranService from './pembayaran-service.js';
 
 const channelName = 'rantai-pasok-channel';
 const chaincodeName = 'rantai-pasok-chaincode';
@@ -115,22 +118,23 @@ const confirm = async (user, request) => {
   const transaksi = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
   const transaksiJSON = JSON.parse(transaksi.toString());
 
-  if (transaksiJSON.status !== status.CREATED) {
+  if (transaksiJSON.status !== status.OK) {
     throw new ResponseError(transaksiJSON.status, transaksiJSON.message);
   }
 
-  const transaksiItems = await findOne(user, request);
-  transaksiJSON.data.transaksiItems = transaksiItems;
+  const transaksiWithItems = await findOne(user, request);
 
   if (
     user.role === util.getAttributeName('pks').databaseRoleName &&
-    transaksiJSON.statusKoperasi === statusRantaiPasok.penawaranTransaksi.disetujui.string
+    transaksiWithItems.statusPks === statusRantaiPasok.penawaranTransaksi.disetujui.string
   ) {
+    const { transaksiItems } = transaksiWithItems;
     const totalKuantitas = transaksiItems.reduce((total, item) => total + item.kuantitas, 0);
     const updateKuantitasKontrakRequest = {
       idKontrak: request.idKontrak,
       kuantitasTerpenuhi: totalKuantitas, // kuantitas ditambah di chaincode
     };
+
     const updateKuantitasDeliveryOrderRequest = {
       idDeliveryOrder: request.idDeliveryOrder,
       kuantitasTerpenuhi: totalKuantitas, // kuantitas ditambah di chaincode
@@ -140,7 +144,9 @@ const confirm = async (user, request) => {
     await deliveryOrderService.updateKuantitas(user, updateKuantitasDeliveryOrderRequest);
   }
 
-  return transaksiJSON.data;
+  transaksiWithItems.idTransaksiBlockchain = transaksiJSON.data.idTransaksiBlockchain;
+
+  return transaksiWithItems;
 };
 
 const updateStatus = async (user, request) => {
@@ -161,7 +167,7 @@ const updateStatus = async (user, request) => {
   const transaksi = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
   const transaksiJSON = JSON.parse(transaksi.toString());
 
-  if (transaksiJSON.status !== status.CREATED) {
+  if (transaksiJSON.status !== status.OK) {
     throw new ResponseError(transaksiJSON.status, transaksiJSON.message);
   }
 
@@ -222,6 +228,15 @@ const findOne = async (user, request) => {
 
   const transaksiItems = await transaksiItemService.findAll(user, request);
   data.transaksiItems = transaksiItems;
+
+  const pengiriman = await pengirimanService.findAll(user, request);
+  data.pengiriman = pengiriman;
+
+  const penerimaan = await penerimaanService.findAll(user, request);
+  data.penerimaan = penerimaan;
+
+  const pembayaran = await pembayaranService.findAll(user, request);
+  data.pembayaran = pembayaran;
 
   return data;
 };

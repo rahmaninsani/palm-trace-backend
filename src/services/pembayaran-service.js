@@ -41,23 +41,19 @@ const create = async (user, request) => {
     throw new ResponseError(resultJSON.status, resultJSON.message);
   }
 
-  if (user.role === util.getAttributeName('pks').databaseRoleName) {
-    const updateStatusRequest = {
-      idTransaksi: request.idTransaksi,
-      status: statusRantaiPasok.transaksi.dibayarPks.number,
-      updatedAt: time.getCurrentTime(),
-    };
+  const updateStatusRequest = {
+    idTransaksi: request.idTransaksi,
+    status: -1,
+    updatedAt: time.getCurrentTime(),
+  };
 
+  if (user.role === util.getAttributeName('pks').databaseRoleName) {
+    updateStatusRequest.status = statusRantaiPasok.transaksi.dibayarPks.number;
     await transaksiService.updateStatus(user, updateStatusRequest);
   }
 
   if (user.role === util.getAttributeName('koperasi').databaseRoleName) {
-    const updateStatusRequest = {
-      idTransaksi: request.idTransaksi,
-      status: statusRantaiPasok.transaksi.seleseai.number,
-      updatedAt: time.getCurrentTime(),
-    };
-
+    updateStatusRequest.status = statusRantaiPasok.transaksi.seleseai.number;
     await transaksiService.updateStatus(user, updateStatusRequest);
   }
 
