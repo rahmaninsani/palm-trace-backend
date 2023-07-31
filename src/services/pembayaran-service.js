@@ -18,9 +18,10 @@ const create = async (user, request) => {
   const payload = {
     id: uuidv4(),
     idTransaksi: request.idTransaksi,
+    jenisUser: user.role,
     nomor: transaction.generateTransactionCode('PEMBAYARAN'),
     tanggal: time.getCurrentTime(),
-    jumlah: request.jumlah,
+    jumlahBayar: request.jumlahBayar,
     hashBukti: `${transaction.generateTransactionCode('BUKTI_BAYAR')}`,
     createdAt: time.getCurrentTime(),
     updatedAt: time.getCurrentTime(),

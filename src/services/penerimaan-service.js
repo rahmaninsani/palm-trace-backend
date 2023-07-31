@@ -18,6 +18,7 @@ const create = async (user, request) => {
   const payload = {
     id: uuidv4(),
     idTransaksi: request.idTransaksi,
+    jenisUser: user.role,
     nomor: transaction.generateTransactionCode('PENERIMAAN'),
     tanggal: time.getCurrentTime(),
     kuantitas: request.kuantitas,

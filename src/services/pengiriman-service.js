@@ -20,6 +20,7 @@ const create = async (user, request) => {
     idTransaksi: request.idTransaksi,
     nomor: transaction.generateTransactionCode('PENGIRIMAN'),
     tanggal: time.getCurrentTime(),
+    jenisUser: user.role,
     namaSopir: request.namaSopir,
     nomorTeleponSopir: request.nomorTeleponSopir,
     namaKendaraan: request.namaKendaraan,
