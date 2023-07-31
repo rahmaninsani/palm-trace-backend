@@ -131,7 +131,7 @@ const findAll = async (user) => {
   }
 
   if (user.role === util.getAttributeName('petani').databaseRoleName) {
-    payload.idKoperasi = user.idKoperasi;
+    payload.idKoperasi = user.idAkunKoperasi;
     payload.status = statusRantaiPasok.penawaranKontrak.disetujui.number;
   }
 
@@ -162,7 +162,7 @@ const findOne = async (user, request) => {
   }
 
   const { data } = resultJSON;
-  if (data.idPks !== user.id && data.idKoperasi !== user.id && data.idKoperasi !== user.idKoperasi) {
+  if (data.idPks !== user.id && data.idKoperasi !== user.id && data.idKoperasi !== user.idAkunKoperasi) {
     throw new ResponseError(status.FORBIDDEN, 'Anda tidak memiliki akses ke data ini');
   }
 
@@ -192,7 +192,7 @@ const findOneHistory = async (user, request) => {
   }
 
   const { data } = resultJSON;
-  if (data[0].idPks !== user.id && data[0].idKoperasi !== user.id && data[0].idKoperasi !== user.idKoperasi) {
+  if (data[0].idPks !== user.id && data[0].idKoperasi !== user.id && data[0].idKoperasi !== user.idAkunKoperasi) {
     throw new ResponseError(status.FORBIDDEN, 'Anda tidak memiliki akses ke data ini');
   }
 

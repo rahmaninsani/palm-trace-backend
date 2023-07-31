@@ -49,7 +49,7 @@ const authMiddleware = async (req, res, next) => {
       },
     });
 
-    akun.idKoperasi = petaniKoperasi.koperasi?.idAkun;
+    akun.idAkunKoperasi = petaniKoperasi.koperasi?.idAkun;
   }
 
   req.user = akun;
