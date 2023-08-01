@@ -9,6 +9,8 @@ import ResponseError from '../errors/response-error.js';
 import util from '../utils/util.js';
 import statusRantaiPasok from '../constant/status-rantai-pasok.js';
 
+import userService from './user-service.js';
+
 const channelName = 'rantai-pasok-channel';
 const chaincodeName = 'rantai-pasok-chaincode';
 
@@ -141,6 +143,19 @@ const findAll = async (user) => {
   if (resultJSON.status !== status.OK) {
     throw new ResponseError(resultJSON.status, resultJSON.message);
   }
+
+  await Promise.all(
+    resultJSON.data.map(async (kontrak) => {
+      const userRequest = {
+        userType: 'koperasi',
+        idAkun: kontrak.idKoperasi,
+      };
+
+      const koperasi = await userService.findOne(userRequest);
+
+      kontrak.namaKoperasi = koperasi.nama;
+    })
+  );
 
   return resultJSON.data;
 };
