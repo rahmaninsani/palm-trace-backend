@@ -70,7 +70,7 @@ const confirm = async (user, request) => {
     id: request.idKontrak,
     status: request.status,
     pesan: request.pesan,
-    tanggalRespons: time.getCurrentTime(),
+    tanggalKonfirmasi: time.getCurrentTime(),
     updatedAt: time.getCurrentTime(),
   };
 
@@ -186,6 +186,19 @@ const findOne = async (user, request) => {
       throw new ResponseError(status.NOT_FOUND);
     }
   }
+
+  const pks = await userService.findOne({
+    userType: 'pks',
+    idAkun: data.idPks,
+  });
+
+  const koperasi = await userService.findOne({
+    userType: 'koperasi',
+    idAkun: data.idKoperasi,
+  });
+
+  data.namaPks = pks.nama;
+  data.namaKoperasi = koperasi.nama;
 
   return data;
 };

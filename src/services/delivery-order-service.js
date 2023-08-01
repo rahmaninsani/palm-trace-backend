@@ -10,6 +10,7 @@ import util from '../utils/util.js';
 import statusRantaiPasok from '../constant/status-rantai-pasok.js';
 
 import kontrakService from './kontrak-service.js';
+import userService from './user-service.js';
 
 const channelName = 'rantai-pasok-channel';
 const chaincodeName = 'rantai-pasok-chaincode';
@@ -79,7 +80,7 @@ const confirm = async (user, request) => {
     id: request.idDeliveryOrder,
     status: request.status,
     pesan: request.pesan,
-    tanggalRespons: time.getCurrentTime(),
+    tanggalKonfirmasi: time.getCurrentTime(),
     updatedAt: time.getCurrentTime(),
   };
 
@@ -119,7 +120,7 @@ const updateKuantitas = async (user, request) => {
 };
 
 const findAll = async (user, request) => {
-  await kontrakService.findOne(user, request);
+  const kontrak = await kontrakService.findOne(user, request);
 
   const connection = {
     userId: user.id,
@@ -145,11 +146,24 @@ const findAll = async (user, request) => {
     throw new ResponseError(resultJSON.status, resultJSON.message);
   }
 
+  await Promise.all(
+    resultJSON.data.map(async (deliveryOrder) => {
+      const userRequest = {
+        userType: 'koperasi',
+        idAkun: kontrak.idKoperasi,
+      };
+
+      const koperasi = await userService.findOne(userRequest);
+
+      deliveryOrder.namaKoperasi = koperasi.nama;
+    })
+  );
+
   return resultJSON.data;
 };
 
 const findOne = async (user, request) => {
-  await kontrakService.findOne(user, request);
+  const kontrak = await kontrakService.findOne(user, request);
 
   const connection = {
     userId: user.id,
@@ -172,6 +186,19 @@ const findOne = async (user, request) => {
       throw new ResponseError(status.NOT_FOUND);
     }
   }
+
+  const pks = await userService.findOne({
+    userType: 'pks',
+    idAkun: kontrak.idPks,
+  });
+
+  const koperasi = await userService.findOne({
+    userType: 'koperasi',
+    idAkun: kontrak.idKoperasi,
+  });
+
+  data.namaPks = pks.nama;
+  data.namaKoperasi = koperasi.nama;
 
   return data;
 };

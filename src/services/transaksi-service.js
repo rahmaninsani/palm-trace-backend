@@ -104,14 +104,14 @@ const confirm = async (user, request) => {
   if (user.role === util.getAttributeName('koperasi').databaseRoleName) {
     payload.statusKoperasi = request.status;
     payload.pesanKoperasi = request.pesan;
-    payload.tanggalResponsKoperasi = time.getCurrentTime();
+    payload.tanggalKonfirmasiKoperasi = time.getCurrentTime();
     payload.statusPks = -1;
   }
 
   if (user.role === util.getAttributeName('pks').databaseRoleName) {
     payload.statusPks = request.status;
     payload.pesanPks = request.pesan;
-    payload.tanggalResponsPks = time.getCurrentTime();
+    payload.tanggalKonfirmasiPks = time.getCurrentTime();
     payload.statusKoperasi = -1;
   }
 
