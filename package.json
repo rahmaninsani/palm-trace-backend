@@ -1,7 +1,7 @@
 {
-  "name": "palm-safe-backend",
+  "name": "palm-trace-backend",
   "version": "1.0.0",
-  "description": "Palm Safe Backend",
+  "description": "Palm Trace Backend",
   "type": "module",
   "main": "src/index.js",
   "scripts": {
@@ -21,7 +21,7 @@
   "author": "Rahman Insani",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^5.0.0",
+    "@prisma/client": "^5.1.0",
     "@quixo3/prisma-session-store": "^3.1.13",
     "argon2": "^0.30.3",
     "cors": "^2.8.5",
@@ -46,7 +46,7 @@
     "babel-jest": "^29.5.0",
     "jest": "^29.5.0",
     "nodemon": "^2.0.22",
-    "prisma": "^5.0.0",
+    "prisma": "^5.1.0",
     "supertest": "^6.3.3"
   }
 }

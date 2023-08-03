@@ -7,11 +7,11 @@ const main = async () => {
   try {
     // Insert admin data to database for each organization
     await prismaClient.akun.upsert({
-      where: { email: 'dinas.admin@palmsafe.com' },
+      where: { email: 'dinas.admin@palmtrace.co.id' },
       update: {},
       create: {
-        email: 'dinas.admin@palmsafe.com',
-        password: await argon2.hash('Dinas@Palmsafe2023'),
+        email: 'dinas.admin@palmtrace.co.id',
+        password: await argon2.hash('Dinas@PalmTrace2023'),
         role: util.getAttributeName('dinas').databaseRoleName,
         [util.getAttributeName('dinas').tableName]: {
           create: {
@@ -24,11 +24,11 @@ const main = async () => {
     });
 
     await prismaClient.akun.upsert({
-      where: { email: 'pks.admin@palmsafe.com' },
+      where: { email: 'pks.admin@palmtrace.co.id' },
       update: {},
       create: {
-        email: 'pks.admin@palmsafe.com',
-        password: await argon2.hash('Pks@Palmsafe2023'),
+        email: 'pks.admin@palmtrace.co.id',
+        password: await argon2.hash('Pks@PalmTrace2023'),
         role: util.getAttributeName('pks').databaseRoleName,
         [util.getAttributeName('pks').tableName]: {
           create: {
@@ -41,11 +41,11 @@ const main = async () => {
     });
 
     const { koperasi } = await prismaClient.akun.upsert({
-      where: { email: 'koperasi.admin@palmsafe.com' },
+      where: { email: 'koperasi.admin@palmtrace.co.id' },
       update: {},
       create: {
-        email: 'koperasi.admin@palmsafe.com',
-        password: await argon2.hash('Koperasi@Palmsafe2023'),
+        email: 'koperasi.admin@palmtrace.co.id',
+        password: await argon2.hash('Koperasi@PalmTrace2023'),
         role: util.getAttributeName('koperasi').databaseRoleName,
         [util.getAttributeName('koperasi').tableName]: {
           create: {
@@ -65,11 +65,11 @@ const main = async () => {
     });
 
     await prismaClient.akun.upsert({
-      where: { email: 'petani.admin@palmsafe.com' },
+      where: { email: 'petani.admin@palmtrace.co.id' },
       update: {},
       create: {
-        email: 'petani.admin@palmsafe.com',
-        password: await argon2.hash('Petani@Palmsafe2023'),
+        email: 'petani.admin@palmtrace.co.id',
+        password: await argon2.hash('Petani@PalmTrace2023'),
         role: util.getAttributeName('petani').databaseRoleName,
         [util.getAttributeName('petani').tableName]: {
           create: {
