@@ -2,7 +2,7 @@ import express from 'express';
 
 import util from '../utils/util.js';
 import transaksiController from '../controllers/transaksi-controller.js';
-import { authMiddleware, authMiddlewareRole } from '../middlewares/auth-middleware.js';
+import { authMiddleware, authRoleMiddleware } from '../middlewares/auth-middleware.js';
 
 const pksRole = util.getAttributeName('pks').databaseRoleName;
 const koperasiRole = util.getAttributeName('koperasi').databaseRoleName;
@@ -14,25 +14,25 @@ router.use(authMiddleware);
 
 router.post(
   '/api/kontrak/:idKontrak/delivery-order/:idDeliveryOrder/transaksi',
-  authMiddlewareRole([petaniRole]),
+  authRoleMiddleware([petaniRole]),
   transaksiController.create
 );
 
 router.put(
   '/api/kontrak/:idKontrak/delivery-order/:idDeliveryOrder/transaksi/:idTransaksi',
-  authMiddlewareRole([koperasiRole, pksRole]),
+  authRoleMiddleware([koperasiRole, pksRole]),
   transaksiController.confirm
 );
 
 router.get(
   '/api/kontrak/:idKontrak/delivery-order/:idDeliveryOrder/transaksi/:idTransaksi',
-  authMiddlewareRole([pksRole, koperasiRole, petaniRole]),
+  authRoleMiddleware([pksRole, koperasiRole, petaniRole]),
   transaksiController.findOne
 );
 
 router.get(
   '/api/kontrak/:idKontrak/delivery-order/:idDeliveryOrder/transaksi',
-  authMiddlewareRole([pksRole, koperasiRole, petaniRole]),
+  authRoleMiddleware([pksRole, koperasiRole, petaniRole]),
   transaksiController.findAll
 );
 

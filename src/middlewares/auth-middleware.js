@@ -56,7 +56,7 @@ const authMiddleware = async (req, res, next) => {
   next();
 };
 
-const authMiddlewareRole = (allowedRoles) => async (req, res, next) => {
+const authRoleMiddleware = (allowedRoles) => async (req, res, next) => {
   const currentUserRole = util.getAttributeName(req.user.role).databaseRoleName;
 
   if (!allowedRoles.includes(currentUserRole)) {
@@ -71,7 +71,7 @@ const authMiddlewareRole = (allowedRoles) => async (req, res, next) => {
   next();
 };
 
-const isAlreadyLoggedIn = (req, res, next) => {
+const isLoggedInMiddleware = (req, res, next) => {
   if (req.session.userEmail) {
     return res
       .status(status.FORBIDDEN)
@@ -85,4 +85,4 @@ const isAlreadyLoggedIn = (req, res, next) => {
   next();
 };
 
-export { authMiddleware, authMiddlewareRole, isAlreadyLoggedIn };
+export { authMiddleware, authRoleMiddleware, isLoggedInMiddleware };

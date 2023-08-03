@@ -95,7 +95,7 @@ const login = async (session, request) => {
   });
 
   if (!akun) {
-    throw new ResponseError(404, 'User tidak ditemukan');
+    throw new ResponseError(404, 'Akun pengguna tidak terdaftar');
   }
 
   const isPasswordValid = await argon2.verify(akun.password, userRequest.password);
@@ -138,7 +138,7 @@ const me = async (email) => {
   });
 
   if (!akun) {
-    throw new ResponseError(404, 'User tidak ditemukan');
+    throw new ResponseError(404, 'Akun pengguna tidak terdaftar');
   }
 
   const { tableName, roleName } = util.getAttributeName(akun.role);
