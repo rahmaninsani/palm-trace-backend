@@ -16,6 +16,7 @@ const create = async (user, request) => {
     idKebun: request.idKebun,
     kuantitas: request.kuantitas,
     harga: request.harga,
+    umurTanam: request.umurTanam,
     createdAt: time.getCurrentTime(),
     updatedAt: time.getCurrentTime(),
   };
