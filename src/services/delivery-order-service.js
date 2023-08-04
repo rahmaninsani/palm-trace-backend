@@ -64,7 +64,7 @@ const create = async (user, request) => {
 const confirm = async (user, request) => {
   const deliveryOrderPrev = await findOne(user, request);
 
-  if (deliveryOrderPrev.status === statusRantaiPasok.penawaranDeliverOrder.disetujui.string) {
+  if (deliveryOrderPrev.status === statusRantaiPasok.penawaranDeliveryOrder.disetujui.string) {
     throw new ResponseError(status.BAD_REQUEST, 'Delivery order sudah disetujui');
   }
 
@@ -136,7 +136,7 @@ const findAll = async (user, request) => {
   };
 
   if (user.role === util.getAttributeName('petani').databaseRoleName) {
-    payload.status = statusRantaiPasok.penawaranDeliverOrder.disetujui.number;
+    payload.status = statusRantaiPasok.penawaranDeliveryOrder.disetujui.number;
   }
 
   const result = await fabricClient.evaluateTransaction(connection, JSON.stringify(payload));
@@ -182,7 +182,7 @@ const findOne = async (user, request) => {
 
   const { data } = resultJSON;
   if (user.role === util.getAttributeName('petani').databaseRoleName) {
-    if (data.status !== statusRantaiPasok.penawaranDeliverOrder.disetujui.string) {
+    if (data.status !== statusRantaiPasok.penawaranDeliveryOrder.disetujui.string) {
       throw new ResponseError(status.NOT_FOUND);
     }
   }
@@ -223,7 +223,7 @@ const findOneHistory = async (user, request) => {
 
   const { data } = resultJSON;
   if (user.role === util.getAttributeName('petani').databaseRoleName) {
-    if (data[0].status !== statusRantaiPasok.penawaranDeliverOrder.disetujui.string) {
+    if (data[0].status !== statusRantaiPasok.penawaranDeliveryOrder.disetujui.string) {
       throw new ResponseError(status.NOT_FOUND);
     }
   }

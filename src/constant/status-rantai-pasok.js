@@ -13,7 +13,7 @@ const penawaranKontrak = {
   },
 };
 
-const penawaranDeliverOrder = {
+const penawaranDeliveryOrder = {
   menungguKonfirmasi: {
     number: 0,
     string: 'Menunggu Konfirmasi',
@@ -80,7 +80,7 @@ const transaksi = {
 
 const statusRantaiPasok = {
   penawaranKontrak,
-  penawaranDeliverOrder,
+  penawaranDeliveryOrder,
   penawaranTransaksi,
   transaksi,
 };
