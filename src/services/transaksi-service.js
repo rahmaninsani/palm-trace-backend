@@ -229,14 +229,39 @@ const findOne = async (user, request) => {
   const transaksiItems = await transaksiItemService.findAll(user, request);
   data.transaksiItems = transaksiItems;
 
-  const pengiriman = await pengirimanService.findAll(user, request);
-  data.pengiriman = pengiriman;
+  if (
+    data.status === statusRantaiPasok.transaksi.dikirimPetani.string ||
+    data.status === statusRantaiPasok.transaksi.dikirimKoperasi.string
+  ) {
+    const pengiriman = await pengirimanService.findAll(user, request);
+    data.pengiriman = pengiriman;
+  }
 
-  const penerimaan = await penerimaanService.findAll(user, request);
-  data.penerimaan = penerimaan;
+  if (
+    data.status === statusRantaiPasok.transaksi.diterimaKoperasi.string ||
+    data.status === statusRantaiPasok.transaksi.diterimaPks.string
+  ) {
+    const pengiriman = await pengirimanService.findAll(user, request);
+    data.pengiriman = pengiriman;
 
-  const pembayaran = await pembayaranService.findAll(user, request);
-  data.pembayaran = pembayaran;
+    const penerimaan = await penerimaanService.findAll(user, request);
+    data.penerimaan = penerimaan;
+  }
+
+  if (
+    data.status === statusRantaiPasok.transaksi.dibayarPks.string ||
+    data.status === statusRantaiPasok.transaksi.dibayarKoperasi.string ||
+    data.status === statusRantaiPasok.transaksi.selesai.string
+  ) {
+    const pengiriman = await pengirimanService.findAll(user, request);
+    data.pengiriman = pengiriman;
+
+    const penerimaan = await penerimaanService.findAll(user, request);
+    data.penerimaan = penerimaan;
+
+    const pembayaran = await pembayaranService.findAll(user, request);
+    data.pembayaran = pembayaran;
+  }
 
   return data;
 };

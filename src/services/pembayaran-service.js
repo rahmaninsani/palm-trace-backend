@@ -54,7 +54,7 @@ const create = async (user, request) => {
   }
 
   if (user.role === util.getAttributeName('koperasi').databaseRoleName) {
-    updateStatusRequest.status = statusRantaiPasok.transaksi.seleseai.number;
+    updateStatusRequest.status = statusRantaiPasok.transaksi.selesai.number;
     await transaksiService.updateStatus(user, updateStatusRequest);
   }
 

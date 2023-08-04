@@ -72,7 +72,7 @@ const transaksi = {
     number: 12,
     string: 'Dibayar Koperasi',
   },
-  seleseai: {
+  selesai: {
     number: 13,
     string: 'Selesai',
   },
