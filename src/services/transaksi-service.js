@@ -9,6 +9,7 @@ import ResponseError from '../errors/response-error.js';
 import util from '../utils/util.js';
 import statusRantaiPasok from '../constant/status-rantai-pasok.js';
 
+import userService from './user-service.js';
 import kontrakService from './kontrak-service.js';
 import deliveryOrderService from './delivery-order-service.js';
 import transaksiItemService from './transaksi-item-service.js';
@@ -200,7 +201,42 @@ const findAll = async (user, request) => {
     throw new ResponseError(resultJSON.status, resultJSON.message);
   }
 
-  return resultJSON.data;
+  const { data } = resultJSON;
+  const petani = await userService.findOne({
+    userType: 'petani',
+    idAkun: data[0].idPetani,
+  });
+
+  const categorizedData = {
+    berlangsung: [],
+    berhasil: [],
+    tidakBerhasil: [],
+  };
+
+  await Promise.all(
+    data.map(async (transaksi) => {
+      const transaksiWithItems = await findOne(user, { ...request, idTransaksi: transaksi.id });
+      const { transaksiItems } = transaksiWithItems;
+
+      transaksi.totalKuantitas = transaksiItems.reduce((total, item) => total + item.kuantitas, 0);
+      transaksi.totalHarga = transaksiItems.reduce((total, item) => total + item.kuantitas * item.harga, 0);
+      transaksi.namaPetani = petani.nama;
+
+      switch (transaksi.status) {
+        case statusRantaiPasok.transaksi.selesai.string:
+          categorizedData.berhasil.push(transaksi);
+          break;
+        case transaksi.status.toLowerCase().includes('ditolak'):
+          categorizedData.tidakBerhasil.push(transaksi);
+          break;
+        default:
+          categorizedData.berlangsung.push(transaksi);
+          break;
+      }
+    })
+  );
+
+  return categorizedData;
 };
 
 const findOne = async (user, request) => {
