@@ -236,6 +236,10 @@ const findAll = async (user, request) => {
     })
   );
 
+  categorizedData.berlangsung.sort((a, b) => a.updatedAt.localeCompare(b.updatedAt));
+  categorizedData.berhasil.sort((a, b) => a.updatedAt.localeCompare(b.updatedAt));
+  categorizedData.tidakBerhasil.sort((a, b) => a.updatedAt.localeCompare(b.updatedAt));
+
   return categorizedData;
 };
 
