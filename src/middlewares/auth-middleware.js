@@ -37,7 +37,7 @@ const authMiddleware = async (req, res, next) => {
   }
 
   const { url } = req;
-  if (url !== '/api/users/me' && url !== '/api/users/logout') {
+  if (url !== '/api/users/me' && url !== '/api/users/logout' && url !== '/api/users/profil') {
     if (!akun.profilLengkap) {
       return res
         .status(status.FORBIDDEN)
