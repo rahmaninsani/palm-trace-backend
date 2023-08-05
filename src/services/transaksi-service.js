@@ -216,10 +216,8 @@ const findAll = async (user, request) => {
   await Promise.all(
     data.map(async (transaksi) => {
       const transaksiWithItems = await findOne(user, { ...request, idTransaksi: transaksi.id });
-      const { transaksiItems } = transaksiWithItems;
-
-      transaksi.totalKuantitas = transaksiItems.reduce((total, item) => total + item.kuantitas, 0);
-      transaksi.totalHarga = transaksiItems.reduce((total, item) => total + item.kuantitas * item.harga, 0);
+      transaksi.totalKuantitas = transaksiWithItems.totalKuantitas;
+      transaksi.totalHarga = transaksiWithItems.totalHarga;
       transaksi.namaPetani = petani.nama;
 
       switch (transaksi.status) {
@@ -268,6 +266,15 @@ const findOne = async (user, request) => {
 
   const transaksiItems = await transaksiItemService.findAll(user, request);
   data.transaksiItems = transaksiItems;
+  data.totalKuantitas = transaksiItems.reduce((total, item) => total + item.kuantitas, 0);
+  data.totalHarga = transaksiItems.reduce((total, item) => total + item.kuantitas * item.harga, 0);
+
+  const petani = await userService.findOne({
+    userType: 'petani',
+    idAkun: data.idPetani,
+  });
+  data.namaPetani = petani.nama;
+  data.nomorTeleponPetani = petani.nomorTelepon;
 
   if (
     data.status === statusRantaiPasok.transaksi.dikirimPetani.string ||

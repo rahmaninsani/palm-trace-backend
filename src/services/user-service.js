@@ -30,6 +30,7 @@ const findOne = async (request) => {
       idAkun: true,
       nama: true,
       alamat: true,
+      nomorTelepon: true,
     },
     where: {
       idAkun: request.idAkun,
