@@ -220,16 +220,12 @@ const findAll = async (user, request) => {
       transaksi.totalHarga = transaksiWithItems.totalHarga;
       transaksi.namaPetani = petani.nama;
 
-      switch (transaksi.status) {
-        case statusRantaiPasok.transaksi.selesai.string:
-          categorizedData.berhasil.push(transaksi);
-          break;
-        case transaksi.status.toLowerCase().includes('ditolak'):
-          categorizedData.tidakBerhasil.push(transaksi);
-          break;
-        default:
-          categorizedData.berlangsung.push(transaksi);
-          break;
+      if (transaksi.status === statusRantaiPasok.transaksi.selesai.string) {
+        categorizedData.berhasil.push(transaksi);
+      } else if (transaksi.status.toLowerCase().split(' ')[0] === 'ditolak') {
+        categorizedData.tidakBerhasil.push(transaksi);
+      } else {
+        categorizedData.berlangsung.push(transaksi);
       }
     })
   );
