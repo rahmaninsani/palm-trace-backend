@@ -24,14 +24,8 @@ const findAll = async (request) => {
 };
 
 const findOne = async (request) => {
-  const userType = util.getAttributeName(request.userType).tableName;
+  const userType = util.getAttributeName(request.role).tableName;
   const user = await prismaClient[userType].findFirst({
-    select: {
-      idAkun: true,
-      nama: true,
-      alamat: true,
-      nomorTelepon: true,
-    },
     where: {
       idAkun: request.idAkun,
     },
@@ -41,7 +35,10 @@ const findOne = async (request) => {
     throw new ResponseError(404, 'Data tidak ditemukan');
   }
 
-  return user;
+  return {
+    ...user,
+    email: request.email,
+  };
 };
 
 const userService = { findOne, findAll };

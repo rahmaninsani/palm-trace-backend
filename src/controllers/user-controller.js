@@ -16,5 +16,23 @@ const findAll = async (req, res, next) => {
   }
 };
 
-const userController = { findAll };
+const findOne = async (req, res, next) => {
+  try {
+    const request = req.body;
+    const { id: idAkun, email, role } = req.user;
+    request.idAkun = idAkun;
+    request.email = email;
+    request.role = role;
+
+    const result = await userService.findOne(request);
+    res.status(status.OK).json({
+      status: `${status.OK} ${status[status.OK]}`,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const userController = { findAll, findOne };
 export default userController;
