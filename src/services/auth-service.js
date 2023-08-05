@@ -132,8 +132,8 @@ const me = async (email) => {
     select: {
       id: true,
       email: true,
-      password: true,
       role: true,
+      profilLengkap: true,
     },
   });
 
@@ -155,6 +155,7 @@ const me = async (email) => {
     nama: user.nama,
     email: akun.email,
     role: roleName,
+    profilLengkap: akun.profilLengkap,
   };
 };
 

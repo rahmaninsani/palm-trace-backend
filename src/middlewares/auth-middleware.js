@@ -23,6 +23,7 @@ const authMiddleware = async (req, res, next) => {
       id: true,
       email: true,
       role: true,
+      profilLengkap: true,
     },
   });
 
@@ -33,6 +34,19 @@ const authMiddleware = async (req, res, next) => {
         status: `${status.UNAUTHORIZED} ${status[status.UNAUTHORIZED]}`,
       })
       .end();
+  }
+
+  const { url } = req;
+  if (url !== '/api/users/me' && url !== '/api/users/logout') {
+    if (!akun.profilLengkap) {
+      return res
+        .status(status.FORBIDDEN)
+        .json({
+          status: `${status.FORBIDDEN} ${status[status.FORBIDDEN]}`,
+          message: 'Lengkapi profil Anda terlebih dahulu.',
+        })
+        .end();
+    }
   }
 
   if (akun.role === util.getAttributeName('petani').databaseRoleName) {
@@ -53,6 +67,7 @@ const authMiddleware = async (req, res, next) => {
   }
 
   req.user = akun;
+
   next();
 };
 
