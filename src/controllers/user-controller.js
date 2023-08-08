@@ -1,6 +1,21 @@
 import status from 'http-status';
 import userService from '../services/user-service.js';
 
+const update = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const request = req.body;
+
+    const result = await userService.update(user, request);
+    res.status(status.OK).json({
+      status: `${status.OK} ${status[status.OK]}`,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const findAll = async (req, res, next) => {
   try {
     const userType = req.query.userType;
@@ -18,13 +33,9 @@ const findAll = async (req, res, next) => {
 
 const findOne = async (req, res, next) => {
   try {
-    const request = req.body;
-    const { id: idAkun, email, role } = req.user;
-    request.idAkun = idAkun;
-    request.email = email;
-    request.role = role;
+    const user = req.user;
 
-    const result = await userService.findOne(request);
+    const result = await userService.findOne(user);
     res.status(status.OK).json({
       status: `${status.OK} ${status[status.OK]}`,
       data: result,
@@ -34,5 +45,5 @@ const findOne = async (req, res, next) => {
   }
 };
 
-const userController = { findAll, findOne };
+const userController = { update, findAll, findOne };
 export default userController;

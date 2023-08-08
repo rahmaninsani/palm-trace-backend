@@ -13,6 +13,7 @@ const router = express.Router();
 
 router.use(authMiddleware);
 
+router.put('/api/users/profil', authRoleMiddleware([pksRole, koperasiRole, petaniRole, dinasRole]), userController.update);
 router.get('/api/users/profil', authRoleMiddleware([pksRole, koperasiRole, petaniRole, dinasRole]), userController.findOne);
 router.get('/api/users', authRoleMiddleware([pksRole, koperasiRole, petaniRole]), userController.findAll);
 
