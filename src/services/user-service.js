@@ -81,7 +81,7 @@ const update = async (user, request) => {
     throw new ResponseError(500, 'Gagal memperbarui data akun');
   }
 
-  const updated = await findOne(user);
+  const updated = await findOneProfil(user);
 
   return updated;
 };
@@ -90,6 +90,7 @@ const findAll = async (request) => {
   const userType = util.getAttributeName(request.userType).tableName;
   const users = await prismaClient[userType].findMany({
     select: {
+      id: true,
       idAkun: true,
       nama: true,
       alamat: true,
@@ -106,7 +107,7 @@ const findAll = async (request) => {
   return users;
 };
 
-const findOne = async (user) => {
+const findOneProfil = async (user) => {
   const userType = util.getAttributeName(user.role).tableName;
   const userPrev = await prismaClient[userType].findFirst({
     where: {
@@ -131,7 +132,9 @@ const findOne = async (user) => {
         id: idKoperasi,
       },
       select: {
+        id: true,
         nama: true,
+        alamat: true,
       },
     });
 
@@ -141,7 +144,9 @@ const findOne = async (user) => {
 
     response = {
       ...updatedUserWithoutIdKoperasi,
+      idKoperasi: koperasi.id,
       namaKoperasi: koperasi.nama,
+      alamatKoperasi: koperasi.alamat,
     };
   }
 
@@ -152,5 +157,26 @@ const findOne = async (user) => {
   };
 };
 
-const userService = { update, findOne, findAll };
+const findOne = async (request) => {
+  const userType = util.getAttributeName(request.userType).tableName;
+  const user = await prismaClient[userType].findFirst({
+    select: {
+      idAkun: true,
+      nama: true,
+      alamat: true,
+      nomorTelepon: true,
+    },
+    where: {
+      idAkun: request.idAkun,
+    },
+  });
+
+  if (!user) {
+    throw new ResponseError(404, 'Data pengguna tidak ditemukan');
+  }
+
+  return user;
+};
+
+const userService = { update, findAll, findOne, findOneProfil };
 export default userService;

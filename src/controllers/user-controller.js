@@ -35,7 +35,7 @@ const findOne = async (req, res, next) => {
   try {
     const user = req.user;
 
-    const result = await userService.findOne(user);
+    const result = await userService.findOneProfil(user);
     res.status(status.OK).json({
       status: `${status.OK} ${status[status.OK]}`,
       data: result,

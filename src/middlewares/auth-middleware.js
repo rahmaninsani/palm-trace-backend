@@ -37,8 +37,8 @@ const authMiddleware = async (req, res, next) => {
   }
 
   const { url } = req;
-  if (url !== '/api/users/me' && url !== '/api/users/logout' && url !== '/api/users/profil') {
-    if (!akun.profilLengkap) {
+  if (url !== '/api/users/me' && url !== '/api/users/logout' && url !== '/api/users/profil' && url !== '/api/users') {
+    if (!akun.profilLengkap && akun.role !== util.getAttributeName('petani').databaseRoleName) {
       return res
         .status(status.FORBIDDEN)
         .json({
