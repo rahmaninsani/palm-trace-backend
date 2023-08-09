@@ -1,14 +1,32 @@
 import { v4 as uuidv4 } from 'uuid';
 import status from 'http-status';
+import { File } from 'web3.storage';
 
 import fabricClient from '../applications/fabric.js';
+import web3StorageClient from '../applications/web3storage.js';
 import time from '../utils/time.js';
+import util from '../utils/util.js';
 import ResponseError from '../errors/response-error.js';
 
 const channelName = 'rantai-pasok-channel';
 const chaincodeName = 'rantai-pasok-chaincode';
 
 const create = async (user, request) => {
+  const { body, files } = request;
+
+  const web3Files = [];
+  Object.entries(files).map(([key, value]) => {
+    const fileName = util.generateFileName({ fieldName: key, originalName: value[0].originalname });
+    const web3File = new File([value[0].buffer], fileName, { type: value[0].mimetype });
+    web3Files.push(web3File);
+    files[key] = fileName;
+  });
+
+  const cid = await web3StorageClient.put(web3Files);
+  Object.entries(files).map(([key, value]) => {
+    files[key] = `${cid}/${value}`;
+  });
+
   const connection = {
     userId: user.id,
     role: user.role,
@@ -16,40 +34,37 @@ const create = async (user, request) => {
     chaincodeName,
     chaincodeMethodName: 'KebunCreate',
   };
-
   const payload = {
     id: uuidv4(),
     idPetani: user.id,
-    alamat: request.alamat,
-    latitude: request.latitude,
-    longitude: request.longitude,
-    luas: request.luas,
-    kemampuanProduksiHarian: request.kemampuanProduksiHarian,
-    nomorSuratKeteranganLurah: request.nomorSuratKeteranganLurah,
-    cidSuratKeteranganLurah: request.cidSuratKeteranganLurah,
-    nomorSuratKeteranganGantiRugi: request.nomorSuratKeteranganGantiRugi,
-    cidSuratKeteranganGantiRugi: request.cidSuratKeteranganGantiRugi,
-    nomorSertifikatHakMilik: request.nomorSertifikatHakMilik,
-    cidSertifikatHakMilik: request.cidSertifikatHakMilik,
-    nomorSuratTandaBudidaya: request.nomorSuratTandaBudidaya,
-    cidSuratTandaBudidaya: request.cidSuratTandaBudidaya,
-    nomorSertifikatRspo: request.nomorSertifikatRspo,
-    cidSertifikatRspo: request.cidSertifikatRspo,
-    nomorSertifikatIspo: request.nomorSertifikatIspo,
-    cidSertifikatIspo: request.cidSertifikatIspo,
-    nomorSertifikatIscc: request.nomorSertifikatIscc,
-    cidSertifikatIscc: request.cidSertifikatIscc,
+    alamat: body.alamat,
+    latitude: body.latitude,
+    longitude: body.longitude,
+    luas: parseFloat(body.luas),
+    kemampuanProduksiHarian: parseFloat(body.kemampuanProduksiHarian),
+    nomorSuratKeteranganLurah: body.nomorSuratKeteranganLurah,
+    cidSuratKeteranganLurah: files.suratKeteranganLurah,
+    nomorSuratKeteranganGantiRugi: body.nomorSuratKeteranganGantiRugi,
+    cidSuratKeteranganGantiRugi: files.suratKeteranganGantiRugi,
+    nomorSertifikatHakMilik: body.nomorSertifikatHakMilik,
+    cidSertifikatHakMilik: files.sertifikatHakMilik,
+    nomorSuratTandaBudidaya: body.nomorSuratTandaBudidaya,
+    cidSuratTandaBudidaya: files.suratTandaBudidaya,
+    nomorSertifikatRspo: body.nomorSertifikatRspo,
+    cidSertifikatRspo: files.sertifikatRspo,
+    nomorSertifikatIspo: body.nomorSertifikatIspo,
+    cidSertifikatIspo: files.sertifikatIspo,
+    nomorSertifikatIscc: body.nomorSertifikatIscc,
+    cidSertifikatIscc: files.sertifikatIscc,
     createdAt: time.getCurrentTime(),
     updatedAt: time.getCurrentTime(),
   };
 
   const result = await fabricClient.submitTransaction(connection, JSON.stringify(payload));
   const resultJSON = JSON.parse(result.toString());
-
   if (resultJSON.status !== status.CREATED) {
     throw new ResponseError(resultJSON.status, resultJSON.message);
   }
-
   return resultJSON.data;
 };
 

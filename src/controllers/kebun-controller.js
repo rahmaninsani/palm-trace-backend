@@ -4,7 +4,9 @@ import kebunService from '../services/kebun-service.js';
 const create = async (req, res, next) => {
   try {
     const user = req.user;
-    const request = req.body;
+    const body = req.body;
+    const files = req.files;
+    const request = { body, files };
 
     const result = await kebunService.create(user, request);
     res.status(status.CREATED).json({

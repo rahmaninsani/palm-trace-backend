@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import { v4 as uuidv4 } from 'uuid';
 
 const readFile = async (pathFilename) => {
   try {
@@ -75,5 +76,13 @@ const getOrganizationInfo = async (organizationName) => {
   };
 };
 
-const util = { readFile, getAttributeName, getOrganizationInfo };
+const generateFileName = (file) => {
+  const { fieldName, originalName } = file;
+  const random = uuidv4();
+  const extension = originalName.split('.').pop();
+  const fileName = `${fieldName}_${random}.${extension}`;
+  return fileName;
+};
+
+const util = { readFile, getAttributeName, getOrganizationInfo, generateFileName };
 export default util;
