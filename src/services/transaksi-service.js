@@ -238,7 +238,7 @@ const findAll = async (user, request) => {
 };
 
 const findOne = async (user, request) => {
-  await deliveryOrderService.findOne(user, request);
+  const deliveryOrder = await deliveryOrderService.findOne(user, request);
 
   const connection = {
     userId: user.id,
@@ -264,6 +264,8 @@ const findOne = async (user, request) => {
   data.transaksiItems = transaksiItems;
   data.totalKuantitas = transaksiItems.reduce((total, item) => total + item.kuantitas, 0);
   data.totalHarga = transaksiItems.reduce((total, item) => total + item.kuantitas * item.harga, 0);
+  data.hargaDeliveryOrder = deliveryOrder.harga;
+  data.totalHargaDeliveryOrder = data.totalKuantitas * data.hargaDeliveryOrder;
 
   const petani = await userService.findOne({
     userType: 'petani',
