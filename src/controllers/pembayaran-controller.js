@@ -4,12 +4,18 @@ import pembayaranService from '../services/pembayaran-service.js';
 const create = async (req, res, next) => {
   try {
     const user = req.user;
-    const request = req.body;
-    request.idKontrak = req.params.idKontrak;
-    request.idDeliveryOrder = req.params.idDeliveryOrder;
-    request.idTransaksi = req.params.idTransaksi;
+    const body = req.body;
+    const file = req.file;
+
+    body.idKontrak = req.params.idKontrak;
+    body.idDeliveryOrder = req.params.idDeliveryOrder;
+    body.idTransaksi = req.params.idTransaksi;
+
+    const request = { body, file };
 
     const result = await pembayaranService.create(user, request);
+    await pembayaranService.create(user, request);
+
     res.status(status.CREATED).json({
       status: `${status.CREATED} ${status[status.CREATED]}`,
       data: result,

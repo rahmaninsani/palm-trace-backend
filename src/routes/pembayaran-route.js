@@ -3,6 +3,7 @@ import express from 'express';
 import util from '../utils/util.js';
 import pembayaranController from '../controllers/pembayaran-controller.js';
 import { authMiddleware, authRoleMiddleware } from '../middlewares/auth-middleware.js';
+import fileMiddleware from '../middlewares/file-middleware.js';
 
 const pksRole = util.getAttributeName('pks').databaseRoleName;
 const koperasiRole = util.getAttributeName('koperasi').databaseRoleName;
@@ -15,6 +16,7 @@ router.use(authMiddleware);
 router.post(
   '/api/kontrak/:idKontrak/delivery-order/:idDeliveryOrder/transaksi/:idTransaksi/pembayaran',
   authRoleMiddleware([pksRole, koperasiRole]),
+  fileMiddleware.upload().single('buktiPembayaran'),
   pembayaranController.create
 );
 
