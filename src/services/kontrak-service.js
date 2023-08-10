@@ -146,14 +146,17 @@ const findAll = async (user) => {
 
   await Promise.all(
     resultJSON.data.map(async (kontrak) => {
-      const userRequest = {
+      const pks = await userService.findOne({
+        userType: 'pks',
+        idAkun: kontrak.idPks,
+      });
+      const koperasi = await userService.findOne({
         userType: 'koperasi',
         idAkun: kontrak.idKoperasi,
-      };
+      });
 
-      const koperasi = await userService.findOne(userRequest);
-
-      kontrak.namaKoperasi = koperasi.nama;
+      kontrak.pks = { nama: pks.nama };
+      kontrak.koperasi = { nama: koperasi.nama };
     })
   );
 
@@ -197,8 +200,12 @@ const findOne = async (user, request) => {
     idAkun: data.idKoperasi,
   });
 
-  data.namaPks = pks.nama;
-  data.namaKoperasi = koperasi.nama;
+  data.pks = {
+    nama: pks.nama,
+  };
+  data.koperasi = {
+    nama: koperasi.nama,
+  };
 
   return data;
 };

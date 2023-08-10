@@ -271,8 +271,30 @@ const findOne = async (user, request) => {
     userType: 'petani',
     idAkun: data.idPetani,
   });
-  data.namaPetani = petani.nama;
-  data.nomorTeleponPetani = petani.nomorTelepon;
+
+  data.petani = {
+    nama: petani.nama,
+    alamat: petani.alamat,
+    nomorTelepon: petani.nomorTelepon,
+    namaBank: petani.namaBank,
+    nomorRekening: petani.nomorRekening,
+  };
+
+  data.koperasi = {
+    nama: deliveryOrder.koperasi.nama,
+    alamat: deliveryOrder.koperasi.alamat,
+    nomorTelepon: deliveryOrder.koperasi.nomorTelepon,
+    namaBank: deliveryOrder.koperasi.namaBank,
+    nomorRekening: deliveryOrder.koperasi.nomorRekening,
+  };
+
+  data.pks = {
+    nama: deliveryOrder.pks.nama,
+    alamat: deliveryOrder.pks.alamat,
+    nomorTelepon: deliveryOrder.pks.nomorTelepon,
+    namaBank: deliveryOrder.pks.namaBank,
+    nomorRekening: deliveryOrder.pks.nomorRekening,
+  };
 
   if (
     data.status === statusRantaiPasok.transaksi.dikirimPetani.string ||

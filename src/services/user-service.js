@@ -144,9 +144,11 @@ const findOneProfil = async (user) => {
 
     response = {
       ...updatedUserWithoutIdKoperasi,
-      idKoperasi: koperasi.id,
-      namaKoperasi: koperasi.nama,
-      alamatKoperasi: koperasi.alamat,
+      koperasi: {
+        id: koperasi.id,
+        nama: koperasi.nama,
+        alamat: koperasi.alamat,
+      },
     };
   }
 
@@ -160,12 +162,6 @@ const findOneProfil = async (user) => {
 const findOne = async (request) => {
   const userType = util.getAttributeName(request.userType).tableName;
   const user = await prismaClient[userType].findFirst({
-    select: {
-      idAkun: true,
-      nama: true,
-      alamat: true,
-      nomorTelepon: true,
-    },
     where: {
       idAkun: request.idAkun,
     },
@@ -175,7 +171,11 @@ const findOne = async (request) => {
     throw new ResponseError(404, 'Data pengguna tidak ditemukan');
   }
 
-  return user;
+  const { id, password, ...userWithoutIdPassword } = user;
+
+  return {
+    ...userWithoutIdPassword,
+  };
 };
 
 const userService = { update, findAll, findOne, findOneProfil };

@@ -155,7 +155,7 @@ const findAll = async (user, request) => {
 
       const koperasi = await userService.findOne(userRequest);
 
-      deliveryOrder.namaKoperasi = koperasi.nama;
+      deliveryOrder.koperasi = { nama: koperasi.nama };
     })
   );
 
@@ -197,8 +197,21 @@ const findOne = async (user, request) => {
     idAkun: kontrak.idKoperasi,
   });
 
-  data.namaPks = pks.nama;
-  data.namaKoperasi = koperasi.nama;
+  data.pks = {
+    nama: pks.nama,
+    alamat: pks.alamat,
+    nomorTelepon: pks.nomorTelepon,
+    namaBank: pks.namaBank,
+    nomorRekening: pks.nomorRekening,
+  };
+
+  data.koperasi = {
+    nama: koperasi.nama,
+    alamat: koperasi.alamat,
+    nomorTelepon: koperasi.nomorTelepon,
+    namaBank: koperasi.namaBank,
+    nomorRekening: koperasi.nomorRekening,
+  };
 
   return data;
 };
