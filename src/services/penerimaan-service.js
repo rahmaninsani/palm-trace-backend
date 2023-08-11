@@ -21,7 +21,7 @@ const create = async (user, request) => {
     jenisUser: user.role,
     nomor: transaction.generateTransactionCode('PENERIMAAN'),
     tanggal: time.getCurrentTime(),
-    kuantitas: request.kuantitas,
+    kuantitas: parseFloat(request.kuantitas),
     createdAt: time.getCurrentTime(),
     updatedAt: time.getCurrentTime(),
   };

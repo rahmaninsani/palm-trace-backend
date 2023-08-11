@@ -31,7 +31,8 @@ const create = async (user, request) => {
     jenisUser: user.role,
     nomor: transaction.generateTransactionCode('PEMBAYARAN'),
     tanggal: time.getCurrentTime(),
-    jumlahPembayaran: parseFloat(body.jumlahPembayaran),
+    // jumlahPembayaran: parseFloat(body.jumlahPembayaran),
+    jumlahPembayaran: body.jumlahPembayaran, //testing
     namaBankPengirim: body.namaBankPengirim,
     nomorRekeningPengirim: body.nomorRekeningPengirim,
     namaPengirim: body.namaPengirim,
