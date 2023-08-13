@@ -5,7 +5,8 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "pm2 start src/index.js --name palm-trace-backend",
+    "stop": "pm2 stop palm-trace-backend",
     "dev": "nodemon src/index.js",
     "test": "jest -i",
     "db-migrate-dev-create-only": "npx prisma migrate dev --create-only",
