@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from 'uuid';
 import status from 'http-status';
 import { File } from 'web3.storage';
 
-import prismaClient from '../applications/database.js';
 import fabricClient from '../applications/fabric.js';
 import web3StorageClient from '../applications/web3storage.js';
 import time from '../utils/time.js';
@@ -31,8 +30,7 @@ const create = async (user, request) => {
     jenisUser: user.role,
     nomor: transaction.generateTransactionCode('PEMBAYARAN'),
     tanggal: time.getCurrentTime(),
-    // jumlahPembayaran: parseFloat(body.jumlahPembayaran),
-    jumlahPembayaran: body.jumlahPembayaran, //testing
+    jumlahPembayaran: parseFloat(body.jumlahPembayaran),
     namaBankPengirim: body.namaBankPengirim,
     nomorRekeningPengirim: body.nomorRekeningPengirim,
     namaPengirim: body.namaPengirim,

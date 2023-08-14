@@ -33,5 +33,10 @@ router.get(
   authRoleMiddleware([pksRole, koperasiRole, petaniRole]),
   deliveryOrderController.findAll
 );
+router.get(
+  '/api/delivery-order',
+  authRoleMiddleware([pksRole, koperasiRole, petaniRole]),
+  deliveryOrderController.findAllByUser
+);
 
 export default router;

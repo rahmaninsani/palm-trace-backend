@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import status from 'http-status';
 
-import prismaClient from '../applications/database.js';
 import fabricClient from '../applications/fabric.js';
 import time from '../utils/time.js';
 import transaction from '../utils/transaction-code.js';

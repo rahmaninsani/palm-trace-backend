@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import status from 'http-status';
 
-import prismaClient from '../applications/database.js';
 import fabricClient from '../applications/fabric.js';
 import time from '../utils/time.js';
 import transaction from '../utils/transaction-code.js';
@@ -244,5 +243,20 @@ const findOneHistory = async (user, request) => {
   return data;
 };
 
-const deliveryOrderService = { create, confirm, updateKuantitas, findAll, findOne, findOneHistory };
+const findAllByUser = async (user) => {
+  const kontrak = await kontrakService.findAll(user);
+  const deliveryOrder = [];
+
+  await Promise.all(
+    kontrak.map(async (item) => {
+      const request = { idKontrak: item.id };
+      const result = await findAll(user, request);
+      deliveryOrder.push(...result);
+    })
+  );
+
+  return deliveryOrder;
+};
+
+const deliveryOrderService = { create, confirm, updateKuantitas, findAll, findOne, findOneHistory, findAllByUser };
 export default deliveryOrderService;

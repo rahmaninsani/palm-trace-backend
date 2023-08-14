@@ -84,5 +84,19 @@ const findOneHistory = async (req, res, next) => {
   }
 };
 
-const deliveryOrderController = { create, confirm, findAll, findOne, findOneHistory };
+const findAllByUser = async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    const result = await deliveryOrderService.findAllByUser(user);
+    res.status(status.OK).json({
+      status: `${status.OK} ${status[status.OK]}`,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deliveryOrderController = { create, confirm, findAll, findOne, findOneHistory, findAllByUser };
 export default deliveryOrderController;

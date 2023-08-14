@@ -1,12 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import status from 'http-status';
 
-import prismaClient from '../applications/database.js';
 import fabricClient from '../applications/fabric.js';
+import util from '../utils/util.js';
 import time from '../utils/time.js';
 import transaction from '../utils/transaction-code.js';
 import ResponseError from '../errors/response-error.js';
-import util from '../utils/util.js';
 import statusRantaiPasok from '../constant/status-rantai-pasok.js';
 
 import userService from './user-service.js';
@@ -333,5 +332,46 @@ const findOne = async (user, request) => {
   return data;
 };
 
-const transaksiService = { create, confirm, updateStatus, findAll, findOne };
+const findAllByUser = async (user) => {
+  const deliveryOrder = await deliveryOrderService.findAllByUser(user);
+  const transaksi = [];
+
+  await Promise.all(
+    deliveryOrder.map(async (item) => {
+      const request = { idKontrak: item.idKontrak, idDeliveryOrder: item.id };
+      const result = await findAll(user, request);
+      transaksi.push(...result.berlangsung);
+    })
+  );
+
+  return transaksi;
+};
+
+const findAllByUserThisWeek = async (user) => {
+  const transactions = await findAllByUser(user);
+  const { startOfWeek, endOfWeek } = time.getWeekStartEndDate();
+
+  const transactionsThisWeek = transactions.filter((transaction) => {
+    return transaction.updatedAt >= startOfWeek && transaction.updatedAt <= endOfWeek;
+  });
+
+  const transactionsPerDays = {
+    senin: [],
+    selasa: [],
+    rabu: [],
+    kamis: [],
+    jumat: [],
+    sabtu: [],
+    minggu: [],
+  };
+
+  transactionsThisWeek.map((transaction) => {
+    const day = time.getDayOfDate(transaction.updatedAt);
+    transactionsPerDays[day].push(transaction);
+  });
+
+  return transactionsPerDays;
+};
+
+const transaksiService = { create, confirm, updateStatus, findAll, findOne, findAllByUser, findAllByUserThisWeek };
 export default transaksiService;
