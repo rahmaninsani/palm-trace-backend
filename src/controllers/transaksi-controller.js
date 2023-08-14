@@ -99,5 +99,29 @@ const findAllByUserThisWeek = async (req, res, next) => {
   }
 };
 
-const deliveryOrderController = { create, confirm, findAll, findOne, findAllByUser, findAllByUserThisWeek };
-export default deliveryOrderController;
+const findAllByUserLaporan = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const request = req.body;
+    request.periode = req.query.periode;
+
+    const result = await transaksiService.findAllByUserLaporan(user, request);
+    res.status(status.OK).json({
+      status: `${status.OK} ${status[status.OK]}`,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const transaksiController = {
+  create,
+  confirm,
+  findAll,
+  findOne,
+  findAllByUser,
+  findAllByUserThisWeek,
+  findAllByUserLaporan,
+};
+export default transaksiController;

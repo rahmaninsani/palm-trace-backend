@@ -42,6 +42,12 @@ router.get(
   transaksiController.findAllByUserThisWeek
 );
 
+router.get(
+  '/api/transaksi/laporan',
+  authRoleMiddleware([pksRole, koperasiRole, petaniRole]),
+  transaksiController.findAllByUserLaporan
+);
+
 router.get('/api/transaksi', authRoleMiddleware([pksRole, koperasiRole, petaniRole]), transaksiController.findAllByUser);
 
 export default router;

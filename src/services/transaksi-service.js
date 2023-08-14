@@ -217,7 +217,7 @@ const findAll = async (user, request) => {
       const transaksiWithItems = await findOne(user, { ...request, idTransaksi: transaksi.id });
       transaksi.totalKuantitas = transaksiWithItems.totalKuantitas;
       transaksi.totalHarga = transaksiWithItems.totalHarga;
-      transaksi.namaPetani = petani.nama;
+      transaksi.petani = { nama: petani.nama };
 
       if (transaksi.status === statusRantaiPasok.transaksi.selesai.string) {
         categorizedData.berhasil.push(transaksi);
@@ -334,13 +334,35 @@ const findOne = async (user, request) => {
 
 const findAllByUser = async (user) => {
   const deliveryOrder = await deliveryOrderService.findAllByUser(user);
-  const transaksi = [];
+  const transaksi = {
+    berlangsung: [],
+    berhasil: [],
+    tidakBerhasil: [],
+  };
 
   await Promise.all(
     deliveryOrder.map(async (item) => {
       const request = { idKontrak: item.idKontrak, idDeliveryOrder: item.id };
       const result = await findAll(user, request);
-      transaksi.push(...result.berlangsung);
+
+      const berlangsung = result.berlangsung.map((val) => {
+        val.idKontrak = item.idKontrak;
+        return val;
+      });
+
+      const berhasil = result.berhasil.map((val) => {
+        val.idKontrak = item.idKontrak;
+        return val;
+      });
+
+      const tidakBerhasil = result.tidakBerhasil.map((val) => {
+        val.idKontrak = item.idKontrak;
+        return val;
+      });
+
+      transaksi.berlangsung.push(...berlangsung);
+      transaksi.berhasil.push(...berhasil);
+      transaksi.tidakBerhasil.push(...tidakBerhasil);
     })
   );
 
@@ -348,13 +370,8 @@ const findAllByUser = async (user) => {
 };
 
 const findAllByUserThisWeek = async (user) => {
-  const transactions = await findAllByUser(user);
+  const transaksi = await findAllByUser(user);
   const { startOfWeek, endOfWeek } = time.getWeekStartEndDate();
-
-  const transactionsThisWeek = transactions.filter((transaction) => {
-    return transaction.updatedAt >= startOfWeek && transaction.updatedAt <= endOfWeek;
-  });
-
   const transactionsPerDays = {
     senin: [],
     selasa: [],
@@ -365,7 +382,29 @@ const findAllByUserThisWeek = async (user) => {
     minggu: [],
   };
 
-  transactionsThisWeek.map((transaction) => {
+  const transactionBerlangsungThisWeek = transaksi.berlangsung.filter((transaction) => {
+    return transaction.updatedAt >= startOfWeek && transaction.updatedAt <= endOfWeek;
+  });
+
+  transactionBerlangsungThisWeek.map((transaction) => {
+    const day = time.getDayOfDate(transaction.updatedAt);
+    transactionsPerDays[day].push(transaction);
+  });
+
+  const transactionBerhasilThisWeek = transaksi.berhasil.filter((transaction) => {
+    return transaction.updatedAt >= startOfWeek && transaction.updatedAt <= endOfWeek;
+  });
+
+  transactionBerhasilThisWeek.map((transaction) => {
+    const day = time.getDayOfDate(transaction.updatedAt);
+    transactionsPerDays[day].push(transaction);
+  });
+
+  const transactionTidakBerhasilThisWeek = transaksi.tidakBerhasil.filter((transaction) => {
+    return transaction.updatedAt >= startOfWeek && transaction.updatedAt <= endOfWeek;
+  });
+
+  transactionTidakBerhasilThisWeek.map((transaction) => {
     const day = time.getDayOfDate(transaction.updatedAt);
     transactionsPerDays[day].push(transaction);
   });
@@ -373,5 +412,45 @@ const findAllByUserThisWeek = async (user) => {
   return transactionsPerDays;
 };
 
-const transaksiService = { create, confirm, updateStatus, findAll, findOne, findAllByUser, findAllByUserThisWeek };
+const findAllByUserLaporan = async (user, request) => {
+  const transaksi = await findAllByUser(user);
+
+  const { periode } = request;
+
+  const filteredByPeriode = transaksi.berhasil.filter((transaction) => {
+    const date = new Date(transaction.updatedAt);
+    const month = date.toLocaleString('default', { month: 'long' });
+    const year = date.getFullYear();
+    const datePeriode = new Date(periode);
+    const monthPeriode = datePeriode.toLocaleString('default', { month: 'long' });
+    const yearPeriode = datePeriode.getFullYear();
+
+    return month === monthPeriode && year === yearPeriode;
+  });
+
+  const result = [];
+  await Promise.all(
+    filteredByPeriode.map(async (transaction) => {
+      const transactionDetail = await findOne(user, {
+        idKontrak: transaction.idKontrak,
+        idDeliveryOrder: transaction.idDeliveryOrder,
+        idTransaksi: transaction.id,
+      });
+      result.push(transactionDetail);
+    })
+  );
+
+  return result;
+};
+
+const transaksiService = {
+  create,
+  confirm,
+  updateStatus,
+  findAll,
+  findOne,
+  findAllByUser,
+  findAllByUserThisWeek,
+  findAllByUserLaporan,
+};
 export default transaksiService;
