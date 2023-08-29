@@ -1,53 +1,27 @@
 ###
-// Register User PKS
-POST http://localhost:9999/api/users
+// Register User Dinas
+POST http://localhost:3000/api/users
 Content-Type: application/json
 Accept: application/json
 
 {
   "role": "dinas",
-  "nama": "Dinas Test",
-  "alamat": "Jl Dinas Test",
+  "nama": "Dinas Perkebunan",
+  "alamat": "Jl Mutiara Sawit",
   "nomorTelepon": "081234567890",
-  "email": "dinas.test@gmail.com",
-  "password": "test"
+  "email": "dinas@gmail.com",
+  "password": "12345678"
 }
 
 ###
-// Register User Koperasi
-POST http://localhost:9999/api/users
+// Login User Dinas
+POST http://localhost:3000/api/users/login
 Content-Type: application/json
 Accept: application/json
 
 {
-  "role": "koperasi",
-  "nama": "Koperasi Test",
-  "alamat": "Jl Koperasi Test",
-  "nomorTelepon": "081234567890",
-  "email": "koperasi.test@gmail.com",
-  "password": "test"
-}
-
-###
-// Login User PKS
-POST http://localhost:9999/api/users/login
-Content-Type: application/json
-Accept: application/json
-
-{
-  "email": "dinas.test@gmail.com",
-  "password": "test"
-}
-
-###
-// Login User Koperasi
-POST http://localhost:9999/api/users/login
-Content-Type: application/json
-Accept: application/json
-
-{
-  "email": "koperasi.test@gmail.com",
-  "password": "test"
+  "email": "dinas@gmail.com",
+  "password": "12345678"
 }
 
 ###
@@ -65,7 +39,7 @@ Accept: application/json
 
 ###
 // Inisialisasi Referensi Harga
-POST http://localhost:9999/api/referensi-harga-init
+POST http://localhost:3000/api/referensi-harga-init
 Content-Type: application/json
 Accept: application/json
 
