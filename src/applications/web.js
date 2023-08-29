@@ -22,7 +22,9 @@ import pembayaranRoute from '../routes/pembayaran-route.js';
 
 dotenv.config();
 
-const FRONTEND_APP_URL = process.env.FRONTEND_APP_URL || 'http://localhost:3000';
+const FRONTEND_APP_URLS = process.env.FRONTEND_APP_URLS || 'http://localhost:3000';
+const CORS_ALLOWED_ORIGINS = FRONTEND_APP_URLS.split(',');
+
 const SESSION_SECRET = process.env.SESSION_SECRET || '$SeSsIoN-sEcReT$';
 const store = new PrismaSessionStore(prismaClient, {
   dbRecordIdIsSessionId: true,
@@ -47,7 +49,7 @@ web.use(
 web.use(
   cors({
     credentials: true,
-    origin: FRONTEND_APP_URL,
+    origin: CORS_ALLOWED_ORIGINS,
   })
 );
 
